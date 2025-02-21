@@ -34,12 +34,12 @@ export const register = asyncHandler(async (req, res) => {
 
 // admin login api
 export const login = asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
     // Check if admin exists
-    const admin = await Admin.findOne({ email }).exec();
+    const admin = await Admin.findOne({ username }).exec();
     if (!admin) {
-        return res.status(401).json({ message: 'Invalid email or password' });
+        return res.status(401).json({ message: 'Invalid username or password' });
     }
 
     // Check if password is provided
@@ -63,3 +63,24 @@ export const login = asyncHandler(async (req, res) => {
         token: token
     });
 });
+
+// admin update profile api
+
+export const updateProfile = asyncHandler(async (req, res) => {
+    const { id, firstName, lastName, username, email, instituteName } = req.body;
+    // Ensure ID is provided
+    if (!id) {
+        return res.status(400).json({ message: 'Admin ID is required' });
+    }
+    // Find and update the admin profile
+    const admin = await Admin.findByIdAndUpdate(
+        id,
+        { firstName, lastName, username, email, instituteName },
+        { new: true, runValidators: true }
+    ).exec();
+    if (!admin) {
+        return res.status(404).json({ message: 'Admin not found' });
+    }
+    res.json({ message: 'Profile updated', admin });
+});
+
