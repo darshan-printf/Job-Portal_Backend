@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import User from "../models/user.modal.js";
+import Admin from "../models/Admin.js";
 
 const protect = async (req, res, next) => {
     let token = req.headers.authorization || req.headers.token; // Allow token in either "authorization" or "token" header
@@ -10,7 +10,7 @@ const protect = async (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET); // This will automatically throw an error if the token is expired
-        req.user = await User.findById(decoded.id).select("-password");
+        req.Admin = await Admin.findById(decoded.id).select("-password");
         next();
     } catch (error) {
         if (error.name === 'TokenExpiredError') {
