@@ -48,10 +48,21 @@ export const updateState = asyncHandler(async (req, res) => {
 
 // delete state by id
 export const deleteState = asyncHandler(async (req, res) => {
-    const state = await State.findById(req.params.id);
+    const { id } = req.params;
+
+    // Validate ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ message: "Invalid state ID " });
+    }
+
+    // Find state by ID
+    const state = await State.findById(id);
     if (!state) {
         return res.status(404).json({ message: "State not found" });
     }
-    await state.remove();
+
+    // Delete the state
+    await State.findByIdAndDelete(id);
+
     res.json({ message: "State deleted successfully" });
 });
