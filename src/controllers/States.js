@@ -26,13 +26,25 @@ export const getStateById = asyncHandler(async (req, res) => {
 });
 
 // update state by id
-export const updateState = asyncHandler(async (req, res) => {   
-    const state = await State.findByIdAndUpdate(req.params.id, req.body, { new: true });
+import mongoose from "mongoose";
+
+export const updateState = asyncHandler(async (req, res) => {
+    const { id, name, code } = req.body;
+
+    // Validate ObjectId
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ message: "Invalid state ID " });
+    }
+
+    const state = await State.findByIdAndUpdate(id, { name, code }, { new: true });
+
     if (!state) {
         return res.status(404).json({ message: "State not found" });
     }
+
     res.json(state);
 });
+
 
 // delete state by id
 export const deleteState = asyncHandler(async (req, res) => {
