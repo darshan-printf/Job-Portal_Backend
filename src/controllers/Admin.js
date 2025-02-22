@@ -37,7 +37,7 @@ export const login = asyncHandler(async (req, res) => {
     const { username, password } = req.body;
 
     // Check if admin exists
-    const admin = await Admin.findOne({ username }).exec();
+    const admin = await Admin.findOne({ username: username.trim() }).exec();
     if (!admin) {
         return res.status(401).json({ message: 'Invalid username or password' });
     }
