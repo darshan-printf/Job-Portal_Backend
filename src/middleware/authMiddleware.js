@@ -9,8 +9,14 @@ const protect = async (req, res, next) => {
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET); // This will automatically throw an error if the token is expired
-        req.Admin = await Admin.findById(decoded.id).select("-password");
+        const decoded = jwt.verify(token, process.env.JWT_SECRET); // This will throw an error if the token is expired
+        const admin = await Admin.findById(decoded.id).select("-password");
+
+        if (!admin) {
+            return res.status(401).json({ message: "Unauthorized: Admin not found" });
+        }
+
+        req.admin = admin; // Attach the admin object to the request
         next();
     } catch (error) {
         if (error.name === 'TokenExpiredError') {
@@ -20,4 +26,17 @@ const protect = async (req, res, next) => {
     }
 };
 
+
 export default protect;
+
+
+const authorize = (...roles) => {
+    return (req, res, next) => {
+        if (!req.admin || !roles.includes(req.admin.role)) {
+            return res.status(403).json({ message: "Forbidden: You do not have permission to access this resource" });
+        }
+        next();
+    };
+};
+
+export { authorize };
