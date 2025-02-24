@@ -91,4 +91,5 @@ export const useRegister = asyncHandler(async (req, res) => {
     });
 
     await newAdmin.save();
+    res.status(201).json({ message: 'User created', admin: newAdmin });
 })
