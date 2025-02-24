@@ -21,3 +21,14 @@ export const updateProfile = asyncHandler(async (req, res) => {
     res.json({ message: 'Profile updated', admin });
 });
 
+// get admin by id 
+export const getAdminById = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const admin = await Admin.findById(id);
+    if (!admin) {
+        return res.status(404).json({ message: 'Admin not found' });
+    }
+    res.json(admin);
+});
+
+
