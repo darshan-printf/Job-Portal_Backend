@@ -12,9 +12,9 @@ export const createCity = asyncHandler(async (req, res) => {
 });
 
 // get all states
-export const getAllCities = asyncHandler(async (req, res) => {
-    const cities = await City.find({});
-    res.json(cities);
+export const getAllCitys = asyncHandler(async (req, res) => {
+    const citys = await City.find({});
+    res.json(citys);
 });
 
 // get state by id
