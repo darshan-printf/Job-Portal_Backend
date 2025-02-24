@@ -46,6 +46,10 @@ export const login = asyncHandler(async (req, res) => {
     if (!password) {
         return res.status(401).json({ message: 'Password is required' });
     }
+    // chack if admin is active
+    if (!admin.isActive) {
+        return res.status(401).json({ message: 'User is not active' });
+    }
 
     // Compare hashed password
     const isMatch = await bcrypt.compare(password, admin.password);

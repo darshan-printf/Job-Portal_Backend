@@ -59,3 +59,16 @@ export const deleteUser = asyncHandler(async (req, res) => {
     }
     res.json({ message: "User deleted", user });
 });
+
+
+// user Active & Deactive
+export const activeStatus = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const user = await Admin.findById(id);
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+    user.isActive = !user.isActive;
+    await user.save();
+    res.json({ message: "User status updated", user });
+});
