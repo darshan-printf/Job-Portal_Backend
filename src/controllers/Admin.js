@@ -31,9 +31,6 @@ export const updateProfile = asyncHandler(async (req, res) => {
 // get admin by id 
 export const getAdminById = asyncHandler(async (req, res) => {
     const { id } = req.params;
-
-    console.log("Received ID:", id); // Debugging
-
     // Check if ID is a valid MongoDB ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({ message: 'Invalid Admin ID format' });
