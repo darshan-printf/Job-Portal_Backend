@@ -1,14 +1,15 @@
 import { Router } from "express";
 import { createCountry, deleteCountry, getAllCountries, getCountryById, updateCountry } from "../controllers/Country.js";
 import protect from "../middleware/authMiddleware.js";
+import { authorize } from "../middleware/authMiddleware.js";
 
 const countryRoute = Router();
 
 
-countryRoute.post("/add",protect,createCountry);
-countryRoute.get("/get",protect,getAllCountries);
-countryRoute.get('/get/:id',protect,getCountryById);
-countryRoute.put('/update',protect,updateCountry);
-countryRoute.delete('/delete/:id',protect,deleteCountry);
+countryRoute.post("/add",protect,authorize("admin"),createCountry);
+countryRoute.get("/get",protect,authorize("admin"),getAllCountries);
+countryRoute.get('/get/:id',protect,authorize("admin"),getCountryById);
+countryRoute.put('/update',protect,authorize("admin"),updateCountry);
+countryRoute.delete('/delete/:id',protect,authorize("admin"),deleteCountry);
 
 export default countryRoute;
