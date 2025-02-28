@@ -5,6 +5,7 @@ import stateRoute from "./StatesRoutes.js";
 import cityRoute from "./CityRoutes.js";
 import authRouter from "./Auth.js";
 import userRoute from "./User.js";
+import educationRoute from "./Education.js";
 
 const rootRouter = Router();
 
@@ -14,5 +15,6 @@ rootRouter.use('/country',countryRoute);
 rootRouter.use('/state',stateRoute);
 rootRouter.use('/city',cityRoute);
 rootRouter.use('/user',userRoute);
+rootRouter.use('/Education',educationRoute);
 
 export default rootRouter;
