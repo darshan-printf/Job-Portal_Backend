@@ -33,7 +33,7 @@ export default protect;
 const authorize = (...roles) => {
     return (req, res, next) => {
         if (!req.admin || !roles.includes(req.admin.role)) {
-            return res.status(403).json({ message: "Forbidden: You do not have permission to access this resource" });
+            return res.status(403).json({ message: " You do not have permission to access this resource" });
         }
         next();
     };
