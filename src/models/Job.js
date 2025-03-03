@@ -16,4 +16,6 @@ const jobSchema = new mongoose.Schema({
 }, {timestamps: true});  // enable timestamps use createdAt and updatedAt
     
 const Job = mongoose.model("Job", jobSchema);
+
+export default Job;
     

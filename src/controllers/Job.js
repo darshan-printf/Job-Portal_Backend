@@ -11,9 +11,19 @@ export const getAllJobs = asyncHandler(async (req, res) => {
 
 // get jobs by user id
 export const getJobsByUserId = asyncHandler(async (req, res) => {
-    console.log(req,"reqwest");
-    const jobs = await Job.find({ user: userId });
-    res.json(jobs);
+    
+    const userId = req.admin._id;// Get userId from request parameters
+   
+    if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+    }
+
+    try {
+        const jobs = await Job.find({ user: userId });
+        res.json(jobs);
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
 });
 
 // get job by id
@@ -29,10 +39,29 @@ export const getJobById = asyncHandler(async (req, res) => {
 
 // ADD Job
 export const addJob = asyncHandler(async (req, res) => {
-    const { user, Country, State, City, Education, title, description, experience, email, phone } = req.body;
-    const job = await Job.create({ user, Country, State, City, Education, title, description, experience, email, phone });
-    res.status(201).json(job);
+    const { Country, State, City, Education, title, description, experience, email, phone } = req.body;
+    const userId = req.admin._id; // Get the logged-in admin's ID
+
+    try {
+        const job = await Job.create({
+            user: userId, // Automatically assign logged-in admin's ID
+            Country,
+            State,
+            City,
+            Education,
+            title,
+            description,
+            experience,
+            email,
+            phone
+        });
+
+        res.status(201).json(job);
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
 });
+
 
 // update job by id
 export const updateJob = asyncHandler(async (req, res) => {
