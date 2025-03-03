@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 
 const jobSchema = new mongoose.Schema({
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', required: true },
     Country: { type: mongoose.Schema.Types.ObjectId, ref: 'Country', required: true },
     State: { type: mongoose.Schema.Types.ObjectId, ref: 'State', required: true },
     City: { type: mongoose.Schema.Types.ObjectId, ref: 'City', required: true },

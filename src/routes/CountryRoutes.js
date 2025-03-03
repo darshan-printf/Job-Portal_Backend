@@ -7,7 +7,7 @@ const countryRoute = Router();
 
 
 countryRoute.post("/add",protect,authorize("admin"),createCountry);
-countryRoute.get("/get",protect,authorize("admin"),getAllCountries);
+countryRoute.get("/get",protect,authorize("admin","user"),getAllCountries);
 countryRoute.get('/get/:id',protect,authorize("admin"),getCountryById);
 countryRoute.put('/update',protect,authorize("admin"),updateCountry);
 countryRoute.delete('/delete/:id',protect,authorize("admin"),deleteCountry);
