@@ -5,7 +5,11 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 export const createState = asyncHandler(async (req, res) => {
     const { name, code, countryId } = req.body;
     const state = await State.create({ name, code, country:countryId});
-    res.status(201).json(state);
+   if(!countryId){
+       return res.status(404).json({ message: "Country not found" });
+   } 
+   res.status(201).json(state);
+   
 });
 
 // get all states
