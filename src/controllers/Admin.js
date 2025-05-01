@@ -15,7 +15,7 @@ export const updateProfile = asyncHandler(async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({ message: 'Invalid Admin ID format' });
     }
-    // Find and update the admin profile
+    
     const admin = await Admin.findByIdAndUpdate(
         id,
         { firstName, lastName, username, email, instituteName },
