@@ -4,12 +4,12 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 // carte  new state 
 export const createState = asyncHandler(async (req, res) => {
     const { name, code, countryId } = req.body;
-    const state = await State.create({ name, code, country:countryId});
-   if(!countryId){
-       return res.status(404).json({ message: "Country not found" });
-   } 
-   res.status(201).json(state);
-   
+    const state = await State.create({ name, code, country: countryId });
+    if (!countryId) {
+        return res.status(404).json({ message: "Country not found" });
+    }
+    res.status(201).json(state);
+
 });
 
 // get all states
@@ -33,21 +33,35 @@ export const getStateById = asyncHandler(async (req, res) => {
 import mongoose from "mongoose";
 
 export const updateState = asyncHandler(async (req, res) => {
-    const { id, name, code } = req.body;
+    const { id, name, code, countryId } = req.body;
 
-    // Validate ObjectId
+    // Validate State ID
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ message: "Invalid state ID " });
+        return res.status(400).json({ message: "Invalid state ID" });
     }
 
-    const state = await State.findByIdAndUpdate(id, { name, code }, { new: true });
+    // Validate Country ID if provided
+    if (countryId && !mongoose.Types.ObjectId.isValid(countryId)) {
+        return res.status(400).json({ message: "Invalid country ID" });
+    }
+
+    // Prepare data to update
+    const updateData = {
+        name,
+        code,
+        ...(countryId && { country: countryId })
+    };
+
+    // Update the state
+    const state = await State.findByIdAndUpdate(id, updateData, { new: true });
 
     if (!state) {
         return res.status(404).json({ message: "State not found" });
     }
 
-    res.json(state);
+    res.status(200).json(state);
 });
+
 
 
 // delete state by id
