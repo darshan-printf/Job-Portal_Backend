@@ -2,12 +2,33 @@ import Admin from "../models/Admin.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import mongoose from "mongoose";
 import bcrypt from 'bcryptjs';
+import path from 'path';
+import fs from 'fs';
 
 // user api
+const imageToBase64 = (filePath) => {
+    try {
+        const fullPath = path.resolve(filePath); // resolve to absolute path
+        const file = fs.readFileSync(fullPath);
+        const mimeType = path.extname(fullPath).slice(1); // e.g., jpg, png
+        return `data:image/${mimeType};base64,${file.toString('base64')}`;
+    } catch (err) {
+        return ''; // fallback if image not found
+    }
+};
 // get all users
 export const getAllUsers = asyncHandler(async (req, res) => {
-    const users = await Admin.find({ role: "user" }).exec();
-    res.json(users);
+    const users = await Admin.find({ role: "user" }).select("-password -__v").exec();
+
+    const usersWithBase64Images = users.map(user => {
+        return {
+            ...user.toObject(),
+            profileImage: user.profileImage ? imageToBase64(user.profileImage) : '',
+            logo: user.logo ? imageToBase64(user.logo) : ''
+        };
+    });
+
+    res.json(usersWithBase64Images);
 });
 
 // get user by id

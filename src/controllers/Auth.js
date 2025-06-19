@@ -71,10 +71,7 @@ export const login = asyncHandler(async (req, res) => {
 
 // use ragister
 export const useRegister = asyncHandler(async (req, res) => {
-    const { firstName, lastName, username, email, password, instituteName } = req.body;
-
-    
-
+    const { firstName, lastName, username, email, password, instituteName ,isActive } = req.body;
     // Check for existing username
     const usernameExists = await Admin.findOne({ username });
     if (usernameExists) {
