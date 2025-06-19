@@ -7,6 +7,8 @@ const adminSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     instituteName: { type: String, required: true },
+    profileImage: { type: String },
+    logo: { type: String },
     
     role: { 
         type: String, 

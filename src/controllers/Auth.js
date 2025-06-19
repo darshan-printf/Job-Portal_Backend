@@ -71,29 +71,43 @@ export const login = asyncHandler(async (req, res) => {
 
 // use ragister
 export const useRegister = asyncHandler(async (req, res) => {
-    const { firstName, lastName, username, email, password, instituteName  } = req.body;
+    const { firstName, lastName, username, email, password, instituteName } = req.body;
 
-    // Check if admin already exists
-    const existingAdmin = await Admin.findOne({ username });
-    if (existingAdmin) {
-        return res.status(400).json({ message: 'User already exists' });
+    
+
+    // Check for existing username
+    const usernameExists = await Admin.findOne({ username });
+    if (usernameExists) {
+        return res.status(400).json({ message: 'Username already exists' });
+    }
+    // Check for existing email
+    const emailExists = await Admin.findOne({ email });
+    if (emailExists) {
+        return res.status(400).json({ message: 'Email already exists' });
     }
 
     // Hash the password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create a new admin
+    // Get image paths
+    const profileImage = req.files?.profileImage?.[0]?.path || '';
+    const logo = req.files?.logo?.[0]?.path || '';
+
+    // Create new admin
     const newAdmin = new Admin({
         firstName,
         lastName,
-        username,   
+        username,
         email,
-        password: hashedPassword,  // Store hashed password
+        password: hashedPassword,
         instituteName,
-        role:"user"
+        role: "user",
+        profileImage,
+        logo,
+        isActive
     });
 
     await newAdmin.save();
     res.status(201).json({ message: 'User created', admin: newAdmin });
-})
+});
