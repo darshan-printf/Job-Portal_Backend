@@ -37,40 +37,77 @@ export const getUserById = asyncHandler(async (req, res) => {
 
     // Check if the provided ID is a valid MongoDB ObjectId
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ message: "Invalid User ID " });
+        return res.status(400).json({ message: "Invalid User ID" });
     }
 
-    const user = await Admin.findById(id);
+    const user = await Admin.findById(id).select("-password -__v");
 
     if (!user) {
         return res.status(404).json({ message: "User not found" });
     }
 
-    res.json(user);
+    const userObj = user.toObject();
+
+    // Add base64 image data
+    userObj.profileImage = user.profileImage ? imageToBase64(user.profileImage) : '';
+    userObj.logo = user.logo ? imageToBase64(user.logo) : '';
+
+    res.json(userObj);
 });
 
 // update user
 export const updateUser = asyncHandler(async (req, res) => {
-    const { id, firstName, lastName, username, password, email, instituteName } = req.body; // Get id from body
+    const {
+        id,
+        firstName,
+        lastName,
+        username,
+        password,
+        email,
+        instituteName,
+        isActive
+    } = req.body;
+
     if (!id) {
         return res.status(400).json({ message: "User ID is required" });
     }
+
     const user = await Admin.findById(id);
     if (!user) {
         return res.status(404).json({ message: "User not found" });
     }
-    // Hash the password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.username = username;
-    user.password = hashedPassword;
-    user.email = email;
-    user.instituteName = instituteName;
+
+    // Update basic fields
+    user.firstName = firstName || user.firstName;
+    user.lastName = lastName || user.lastName;
+    user.username = username || user.username;
+    user.email = email || user.email;
+    user.instituteName = instituteName || user.instituteName;
+
+    // Optional: Update password only if provided
+    if (password) {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        user.password = hashedPassword;
+    }
+
+    // Optional: Update profileImage and logo if uploaded
+    if (req.files?.profileImage?.[0]?.path) {
+        user.profileImage = req.files.profileImage[0].path;
+    }
+    if (req.files?.logo?.[0]?.path) {
+        user.logo = req.files.logo[0].path;
+    }
+
+    // Optional: Update isActive
+    if (typeof isActive !== "undefined") {
+        user.isActive = isActive;
+    }
+
     await user.save();
     res.json({ message: "User updated", user });
 });
+
 // delete user
 export const deleteUser = asyncHandler(async (req, res) => {
     const { id } = req.params;

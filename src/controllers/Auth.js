@@ -102,7 +102,7 @@ export const useRegister = asyncHandler(async (req, res) => {
         role: "user",
         profileImage,
         logo,
-        isActive
+        isActive 
     });
 
     await newAdmin.save();
