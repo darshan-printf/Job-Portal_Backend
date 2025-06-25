@@ -7,6 +7,7 @@ import authRouter from "./Auth.js";
 import userRoute from "./User.js";
 import educationRoute from "./Education.js";
 import jobRoute from "./JobRoutes.js";
+import Reports from "./Reports.js";
 
 const rootRouter = Router();
 
@@ -18,5 +19,6 @@ rootRouter.use('/city',cityRoute);
 rootRouter.use('/user',userRoute);
 rootRouter.use('/Education',educationRoute);
 rootRouter.use('/job',jobRoute);
+rootRouter.use('/reports',Reports);
 
 export default rootRouter;
