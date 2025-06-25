@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 import path from 'path';
 import fs from 'fs';
 
-// user api
+// Utility function to convert image file to base64
 const imageToBase64 = (filePath) => {
     try {
         const fullPath = path.resolve(filePath); // resolve to absolute path
@@ -16,6 +16,47 @@ const imageToBase64 = (filePath) => {
         return ''; // fallback if image not found
     }
 };
+
+// add user
+export const useAdd = asyncHandler(async (req, res) => {
+    const { firstName, lastName, username, email, password, instituteName } = req.body;
+    // Check for existing username
+    const usernameExists = await Admin.findOne({ username });
+    if (usernameExists) {
+        return res.status(400).json({ message: 'Username already exists' });
+    }
+    // Check for existing email
+    const emailExists = await Admin.findOne({ email });
+    if (emailExists) {
+        return res.status(400).json({ message: 'Email already exists' });
+    }
+
+    // Hash the password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Get image paths
+    const profileImage = req.files?.profileImage?.[0]?.path || '';
+    const logo = req.files?.logo?.[0]?.path || '';
+
+    // Create new admin
+    const newAdmin = new Admin({
+        firstName,
+        lastName,
+        username,
+        email,
+        password: hashedPassword,
+        instituteName,
+        role: "user",
+        profileImage,
+        logo,
+        isActive:"true" // default to true if not provided
+    });
+
+    await newAdmin.save();
+    res.status(201).json({ message: 'User created', admin: newAdmin });
+});
+
 // get all users
 export const getAllUsers = asyncHandler(async (req, res) => {
     const users = await Admin.find({ role: "user" }).select("-password -__v").exec();

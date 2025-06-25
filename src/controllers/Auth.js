@@ -68,10 +68,9 @@ export const login = asyncHandler(async (req, res) => {
     });
 });
 
-
 // use ragister
 export const useRegister = asyncHandler(async (req, res) => {
-    const { firstName, lastName, username, email, password, instituteName ,isActive } = req.body;
+    const { firstName, lastName, username, email, password, instituteName } = req.body;
     // Check for existing username
     const usernameExists = await Admin.findOne({ username });
     if (usernameExists) {
@@ -102,9 +101,9 @@ export const useRegister = asyncHandler(async (req, res) => {
         role: "user",
         profileImage,
         logo,
-        isActive 
+        isActive: "false" // default to false if not provided
     });
 
     await newAdmin.save();
-    res.status(201).json({ message: 'User created', admin: newAdmin });
+    res.status(201).json({ message: 'User Registered Successfully'});
 });
