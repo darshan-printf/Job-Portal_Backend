@@ -8,29 +8,30 @@ import bcrypt from 'bcryptjs';
 export const register = asyncHandler(async (req, res) => {
     const { firstName, lastName, username, email, password, instituteName } = req.body;
 
-    // Check if admin already exists
-    const existingAdmin = await Admin.findOne({ email });
+    // ❌ Check if any admin already exists
+    const existingAdmin = await Admin.findOne({});
     if (existingAdmin) {
-        return res.status(400).json({ message: 'Admin already exists' });
+        return res.status(400).json({ message: 'An admin already exists. Only one admin is allowed.' });
     }
 
-    // Hash the password
+    // ✅ Hash the password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create a new admin
+    // ✅ Create a new admin
     const newAdmin = new Admin({
         firstName,
         lastName,
         username,
         email,
-        password: hashedPassword,  // Store hashed password
+        password: hashedPassword,
         instituteName
     });
 
     await newAdmin.save();
     res.status(201).json({ message: 'Admin created', admin: newAdmin });
 });
+
 
 
 // login api
@@ -106,5 +107,5 @@ export const useRegister = asyncHandler(async (req, res) => {
     });
 
     await newAdmin.save();
-    res.status(201).json({ message: 'User Registered Successfully'});
+    res.status(201).json({ message: 'User Registered Successfully' });
 });
