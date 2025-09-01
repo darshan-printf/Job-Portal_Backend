@@ -5,26 +5,9 @@ import { activeStatus, deleteUser, getAllUsers, getUserById, updateUser, useAdd 
 import upload from "../middleware/uploadMiddleware.js";
 
 const userRoute = Router();
-// This route is used to add a new user, only accessible by admin
-userRoute.post(
-  "/add",
-  protect,
-  authorize("admin"),
-  upload.fields([
-    { name: 'profileImage', maxCount: 1 },
-    { name: 'logo', maxCount: 1 }
-  ]), useAdd);
-// This route is used to update an existing user, only accessible by admin
-userRoute.put(
-  '/update',
-  protect,
-  authorize("admin"),
-  upload.fields([
-    { name: 'profileImage', maxCount: 1 },
-    { name: 'logo', maxCount: 1 }
-  ]),
-  updateUser
-); 
+
+userRoute.post("/add", protect,  authorize("admin"),  upload.fields([  { name: 'profileImage', maxCount: 1 }, { name: 'logo', maxCount: 1 }]), useAdd);
+userRoute.put(  '/update',protect, authorize("admin"), upload.fields([ { name: 'profileImage', maxCount: 1 }, { name: 'logo', maxCount: 1 } ]), updateUser); 
 userRoute.delete('/delete/:id', protect, authorize("admin"), deleteUser);
 userRoute.put('/active/:id', protect, authorize("admin"), activeStatus);
 userRoute.get("/get", protect, authorize("admin"), getAllUsers);
