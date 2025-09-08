@@ -8,7 +8,7 @@ import userRoute from "./User.js";
 import educationRoute from "./Education.js";
 import jobRoute from "./JobRoutes.js";
 import Reports from "./Reports.js";
-import companyRoute from "./companyRoute.js";
+import companyRoute from "./CompanyRoute.js";
 
 const rootRouter = Router();
 
