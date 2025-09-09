@@ -6,14 +6,14 @@ import upload from "../middleware/uploadMiddleware.js";
 
 const companyRoute = Router();
 
-companyRoute.post('/add', protect, authorize('admin'),  addCompany);
-
+companyRoute.post('/register', upload.fields([ { name: 'logo', maxCount: 1 } ]),registerCompany);
 companyRoute.get('/get', protect, authorize('admin'), getAllCompanies);
 companyRoute.get('/get/:id', protect, authorize('admin'), getCompanyById);
-companyRoute.put('/update', protect, authorize('admin'), updateCompany);
+companyRoute.put("/update", protect, authorize("admin"), upload.fields([{ name: 'logo', maxCount: 1 }]), updateCompany);
 companyRoute.delete('/delete/:id', protect, authorize('admin'), deleteCompany);
-companyRoute.get('/activate/:id', protect, authorize('admin'), activateCompany);
-companyRoute.post('/register', upload.fields([ { name: 'logo', maxCount: 1 } ]),registerCompany);
+
+companyRoute.post('/add', protect, authorize('admin'),  addCompany);
+companyRoute.put('/activate/:id', protect, authorize('admin'), activateCompany);
 
 
 
