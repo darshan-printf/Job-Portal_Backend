@@ -19,7 +19,7 @@ const imageToBase64 = (filePath) => {
 
 // add user
 export const useAdd = asyncHandler(async (req, res) => {
-    const { firstName, lastName, username, email, password, instituteName } = req.body;
+    const { firstName, lastName, username, email, password, instituteName , companyId } = req.body;
     // Check for existing username
     const usernameExists = await Admin.findOne({ username });
     if (usernameExists) {
@@ -37,8 +37,6 @@ export const useAdd = asyncHandler(async (req, res) => {
 
     // Get image paths
     const profileImage = req.files?.profileImage?.[0]?.path || '';
-    const logo = req.files?.logo?.[0]?.path || '';
-
     // Create new admin
     const newAdmin = new Admin({
         firstName,
@@ -49,8 +47,8 @@ export const useAdd = asyncHandler(async (req, res) => {
         instituteName,
         role: "user",
         profileImage,
-        logo,
-        isActive:"true" // default to true if not provided
+        isActive:"true", // default to true if not provided
+        companyId
     });
 
     await newAdmin.save();
