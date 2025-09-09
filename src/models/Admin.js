@@ -18,10 +18,19 @@ const adminSchema = new mongoose.Schema(
     },
 
     isActive: { type: Boolean, default: false },
+
+    // Company reference
+    companyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Company",
+      required: function () {
+        return this.role === "user"; // Required only if role is "user"
+      },
+    },
   },
   { timestamps: true }
 );
 
-const Admin = mongoose.model('Admin', adminSchema);
+const Admin = mongoose.model("Admin", adminSchema);
 
 export default Admin;

@@ -240,6 +240,7 @@ export const activateCompany = asyncHandler(async (req, res) => {
         password: hashedPassword,
         role: "user", // company = user
         isActive: true,
+        companyId: company._id,
       });
     } else {
       // Update if already exists
