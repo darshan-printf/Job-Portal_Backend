@@ -14,6 +14,7 @@ const companySchema = new mongoose.Schema({
   CINNumber: { type: String, required: true },
   isActive: { type: Boolean, default: false },
   type: { type: String, required: true },
+  isActivatedOnce: { type: Boolean, default: false },
 });
 
 const Company = mongoose.model("Company", companySchema);

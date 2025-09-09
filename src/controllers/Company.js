@@ -5,6 +5,7 @@ import fs from "fs";
 import path from "path";
 import { sendEmail } from "../utils/email.js";
 import bcrypt from "bcryptjs";
+import Admin from "../models/Admin.js";
 
 // Utility function to convert image file to base64
 const imageToBase64 = (filePath) => {
@@ -20,7 +21,7 @@ const imageToBase64 = (filePath) => {
 // Utility function to generate a random password
 function generatePassword(length = 6) {
   let chars =
-    "0123456789ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz$!@#";
+    "0123456789";
   let password = "";
   for (let i = 0; i < length; i++) {
     password += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -221,26 +222,51 @@ export const activateCompany = asyncHandler(async (req, res) => {
   // Toggle status
   company.isActive = !company.isActive;
   let message = "";
+
   if (company.isActive) {
-    // Agar abhi activate hua
-    const plainPassword = generatePassword(); // 6-digit password
+    // Generate password
+    const plainPassword = generatePassword(); // e.g. 6-digit random
     const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
-    company.password = hashedPassword; // DB me hashed password save
+    // Save hashed password in company
+    company.password = hashedPassword;
 
+    // ---- Create/Update User in Admin collection ----
+    let user = await Admin.findOne({ email: company.email });
+    if (!user) {
+      // Create new user if not exists
+      user = new Admin({
+        username: company.name, // or any unique field
+        password: hashedPassword,
+        role: "user", // company = user
+        isActive: true,
+      });
+    } else {
+      // Update if already exists
+      user.password = hashedPassword;
+      user.isActive = true;
+    }
+    await user.save();
+
+    // ---- Send Email ----
     await sendEmail(
       company.email,
       "Your Company Account Activated",
-      `Hello ${company.name},\nYour account is now active.\n\nUsername: ${company.companyName}\nPassword: ${plainPassword}\n\nLogin and change your password immediately.`,
+      `Hello ${company.name},\nYour account is now active.\n\nUsername: ${user.username}\nPassword: ${plainPassword}\n\nLogin and change your password immediately.`,
       `<h3>Hello ${company.name},</h3>
        <p>Your account has been <b>activated</b>.</p>
-       <p><b>Username:</b> ${company.name}</p>
+       <p><b>Username:</b> ${user.username}</p>
        <p><b>Password:</b> ${plainPassword}</p>
        <p>Please login and change your password immediately.</p>`
     );
 
-    message = `Company activated successfully, Login details shared to ${company.email}`;
+    message = `Company activated successfully, login details shared to ${company.email}`;
   } else {
+    // If deactivate → user bhi inactive kar do
+    await Admin.findOneAndUpdate(
+      { email: company.email },
+      { isActive: false }
+    );
     message = `Company deactivated successfully`;
   }
 
