@@ -11,10 +11,7 @@ companyRoute.get('/get', protect, authorize('admin'), getAllCompanies);
 companyRoute.get('/get/:id', protect, authorize('admin'), getCompanyById);
 companyRoute.put("/update", protect, authorize("admin"), upload.fields([{ name: 'logo', maxCount: 1 }]), updateCompany);
 companyRoute.delete('/delete/:id', protect, authorize('admin'), deleteCompany);
-
-companyRoute.post('/add', protect, authorize('admin'),  addCompany);
+companyRoute.post('/add', protect, authorize('admin'),  upload.fields([ { name: 'logo', maxCount: 1 } ]), addCompany);
 companyRoute.put('/activate/:id', protect, authorize('admin'), activateCompany);
-
-
 
 export default companyRoute;

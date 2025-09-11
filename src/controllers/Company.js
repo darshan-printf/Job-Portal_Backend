@@ -132,13 +132,16 @@ export const addCompany = asyncHandler(async (req, res) => {
     website,
     GSTNumber,
     PANNumber,
-    isActive,
     type,
+    CINNumber,
+    isActive
+
   } = req.body;
 
   // get logo path
   const logo = req.files?.logo?.[0]?.path || "";
 
+  // 1️⃣ Create company
   const company = await Company.create({
     name,
     address,
@@ -148,12 +151,52 @@ export const addCompany = asyncHandler(async (req, res) => {
     logo,
     GSTNumber,
     PANNumber,
-    isActive,
+    isActive: true,
     type,
+    isActivatedOnce: false,
+    CINNumber
   });
+
+  let message = "Company added successfully";
+
+  // 2️⃣ If company should be active immediately -> create admin & send email
+  if (isActive) {
+    const plainPassword = generatePassword();
+    const hashedPassword = await bcrypt.hash(plainPassword, 10);
+
+    // Create admin for this company
+    const user = await Admin.create({
+      username: company.name,
+      email: company.email,
+      password: hashedPassword,
+      role: "user",
+      isActive: true,
+      companyId: company._id,
+      
+    });
+
+    // Mark first activation
+    company.isActivatedOnce = true;
+    await company.save();
+
+    // Send email
+    await sendEmail(
+      company.email,
+      "Your Company Account Activated",
+      `Hello ${company.name},\nYour account is now active.\n\nUsername: ${user.username}\nPassword: ${plainPassword}\n\nLogin and change your password immediately.`,
+      `<h3>Hello ${company.name},</h3>
+       <p>Your account has been <b>activated</b>.</p>
+       <p><b>Username:</b> ${user.username}</p>
+       <p><b>Password:</b> ${plainPassword}</p>
+       <p>Please login and change your password immediately.</p>`
+    );
+
+    message = `Company added & activated successfully. Login details shared to ${company.email}`;
+  }
 
   res.status(201).json({
     success: true,
+    message,
     data: company,
   });
 });
@@ -191,9 +234,17 @@ export const updateCompany = asyncHandler(async (req, res) => {
   });
 });
 
+
 // Delete Company
 export const deleteCompany = asyncHandler(async (req, res) => {
   const { id } = req.params;
+   const adminExists = await Admin.findOne({ companyId: id });
+   if (adminExists) {
+    return res.status(400).json({
+      success: false,
+      message: "Company cannot be deleted because users are associated with it",
+    });
+  }
   const company = await Company.findByIdAndDelete(id);
   if (!company) {
     return res.status(404).json({
@@ -219,51 +270,55 @@ export const activateCompany = asyncHandler(async (req, res) => {
     });
   }
 
-  // Toggle status
+  // Toggle activation
   company.isActive = !company.isActive;
   let message = "";
 
   if (company.isActive) {
-    // Generate password
-    const plainPassword = generatePassword(); // e.g. 6-digit random
-    const hashedPassword = await bcrypt.hash(plainPassword, 10);
+    if (!company.isActivatedOnce) {
+      // 🔹 First time activation logic
 
-    // Save hashed password in company
-    company.password = hashedPassword;
+      const plainPassword = generatePassword();
+      const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
-    // ---- Create/Update User in Admin collection ----
-    let user = await Admin.findOne({ email: company.email });
-    if (!user) {
-      // Create new user if not exists
-      user = new Admin({
-        username: company.name, // or any unique field
+      // Create Admin for this company
+      let user = new Admin({
+        username: company.name,
+        email: company.email,
         password: hashedPassword,
-        role: "user", // company = user
+        role: "user",
         isActive: true,
         companyId: company._id,
       });
+
+      await user.save();
+
+      // Mark first activation
+      company.isActivatedOnce = true;
+
+      // Send email only first time
+      await sendEmail(
+        company.email,
+        "Your Company Account Activated",
+        `Hello ${company.name},\nYour account is now active.\n\nUsername: ${user.username}\nPassword: ${plainPassword}\n\nLogin and change your password immediately.`,
+        `<h3>Hello ${company.name},</h3>
+         <p>Your account has been <b>activated</b>.</p>
+         <p><b>Username:</b> ${user.username}</p>
+         <p><b>Password:</b> ${plainPassword}</p>
+         <p>Please login and change your password immediately.</p>`
+      );
+
+      message = `Company activated successfully, login details shared to ${company.email}`;
     } else {
-      // Update if already exists
-      user.password = hashedPassword;
-      user.isActive = true;
+      // 🔹 Reactivation logic (no new user, no email)
+      await Admin.findOneAndUpdate(
+        { email: company.email },
+        { isActive: true }
+      );
+      message = `Company re-activated successfully (no new email sent)`;
     }
-    await user.save();
-
-    // ---- Send Email ----
-    await sendEmail(
-      company.email,
-      "Your Company Account Activated",
-      `Hello ${company.name},\nYour account is now active.\n\nUsername: ${user.username}\nPassword: ${plainPassword}\n\nLogin and change your password immediately.`,
-      `<h3>Hello ${company.name},</h3>
-       <p>Your account has been <b>activated</b>.</p>
-       <p><b>Username:</b> ${user.username}</p>
-       <p><b>Password:</b> ${plainPassword}</p>
-       <p>Please login and change your password immediately.</p>`
-    );
-
-    message = `Company activated successfully, login details shared to ${company.email}`;
   } else {
-    // If deactivate → user bhi inactive kar do
+    // Deactivation
     await Admin.findOneAndUpdate(
       { email: company.email },
       { isActive: false }
@@ -281,3 +336,4 @@ export const activateCompany = asyncHandler(async (req, res) => {
     },
   });
 });
+
