@@ -84,7 +84,6 @@ export const registerCompany = asyncHandler(async (req, res) => {
       "Company registered successfully please wait 24 hours for approval",
   });
 });
-
 // Get All Companies
 export const getAllCompanies = asyncHandler(async (req, res) => {
   const companies = await Company.find();
@@ -233,8 +232,6 @@ export const updateCompany = asyncHandler(async (req, res) => {
     data: company,
   });
 });
-
-
 // Delete Company
 export const deleteCompany = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -257,7 +254,6 @@ export const deleteCompany = asyncHandler(async (req, res) => {
     message: "Company deleted successfully",
   });
 });
-
 //  Company Activation
 export const activateCompany = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -334,6 +330,22 @@ export const activateCompany = asyncHandler(async (req, res) => {
       message,
       isActive: company.isActive,
     },
+  });
+});
+
+// get resently registered  5 companies
+export const recentlyRegisteredCompanies = asyncHandler(async (req, res) => {
+  const companies = await Company.find().sort({ createdAt: -1 }).limit(5);
+  const companiesWithBase64Logo = companies.map((company) => {
+    return {
+      ...company.toObject(),
+      logo: company.logo ? imageToBase64(company.logo) : "",
+    };
+  });
+  
+  res.status(200).json({
+    success: true,
+    data: companiesWithBase64Logo,
   });
 });
 
