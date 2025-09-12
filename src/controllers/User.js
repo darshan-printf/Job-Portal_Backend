@@ -4,6 +4,9 @@ import mongoose from "mongoose";
 import bcrypt from 'bcryptjs';
 import path from 'path';
 import fs from 'fs';
+import Company from "../models/Company.js";
+
+
 
 // Utility function to convert image file to base64
 const imageToBase64 = (filePath) => {
@@ -19,40 +22,51 @@ const imageToBase64 = (filePath) => {
 
 // add user
 export const useAdd = asyncHandler(async (req, res) => {
-    const { firstName, lastName, username, email, password, instituteName , companyId } = req.body;
-    // Check for existing username
-    const usernameExists = await Admin.findOne({ username });
-    if (usernameExists) {
-        return res.status(400).json({ message: 'Username already exists' });
-    }
-    // Check for existing email
-    const emailExists = await Admin.findOne({ email });
-    if (emailExists) {
-        return res.status(400).json({ message: 'Email already exists' });
-    }
+  const { firstName, lastName, username, email, password, instituteName, companyId } = req.body;
 
-    // Hash the password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+  // Check required field
+  if (!companyId) { return res.status(400).json({ message: "Company ID is required" });}
 
-    // Get image paths
-    const profileImage = req.files?.profileImage?.[0]?.path || '';
-    // Create new admin
-    const newAdmin = new Admin({
-        firstName,
-        lastName,
-        username,
-        email,
-        password: hashedPassword,
-        instituteName,
-        role: "user",
-        profileImage,
-        isActive:"true", // default to true if not provided
-        companyId
-    });
+  // Validate ObjectId format
+  if (!mongoose.isValidObjectId(companyId)) {return res.status(400).json({ message: "Invalid Company ID format" });}
 
-    await newAdmin.save();
-    res.status(201).json({ message: 'User created', admin: newAdmin });
+  // Check if company exists
+  const company = await Company.findById(companyId);
+  if (!company) { return res.status(404).json({ message: "Company not found" });}
+
+  // Check if company is active
+  if (!company.isActive) {return res.status(400).json({ message: "Company is not active, cannot create user" });}
+
+  // Check for existing username
+  const usernameExists = await Admin.findOne({ username });
+  if (usernameExists) { return res.status(400).json({ message: "Username already exists" });}
+
+  // Check for existing email
+  const emailExists = await Admin.findOne({ email });
+  if (emailExists) {return res.status(400).json({ message: "Email already exists" });}
+
+  // Hash the password
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
+
+  // Get image paths
+  const profileImage = req.files?.profileImage?.[0]?.path || "";
+
+  // Create new admin
+  const newAdmin = new Admin({
+    firstName,
+    lastName,
+    username,
+    email,
+    password: hashedPassword,
+    instituteName,
+    role: "user",
+    profileImage,
+    isActive: true,
+    companyId,
+  });
+  await newAdmin.save();
+  res.status(201).json({ message: "User created successfully", admin: newAdmin });
 });
 
 // get all users

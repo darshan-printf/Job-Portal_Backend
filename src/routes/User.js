@@ -6,8 +6,8 @@ import upload from "../middleware/uploadMiddleware.js";
 
 const userRoute = Router();
 
-userRoute.post("/add", protect,  authorize("admin"),  upload.fields([  { name: 'profileImage', maxCount: 1 }, { name: 'logo', maxCount: 1 }]), useAdd);
-userRoute.put(  '/update',protect, authorize("admin"), upload.fields([ { name: 'profileImage', maxCount: 1 }, { name: 'logo', maxCount: 1 } ]), updateUser); 
+userRoute.post("/add", protect,  authorize("admin"),  upload.fields([  { name: 'profileImage', maxCount: 1 }]), useAdd);
+userRoute.put(  '/update',protect, authorize("admin"), upload.fields([ { name: 'profileImage', maxCount: 1 }]), updateUser); 
 userRoute.delete('/delete/:id', protect, authorize("admin"), deleteUser);
 userRoute.put('/active/:id', protect, authorize("admin"), activeStatus);
 userRoute.get("/get", protect, authorize("admin"), getAllUsers);

@@ -20,8 +20,7 @@ const imageToBase64 = (filePath) => {
 };
 // Utility function to generate a random password
 function generatePassword(length = 6) {
-  let chars =
-    "0123456789";
+  let chars = "0123456789";
   let password = "";
   for (let i = 0; i < length; i++) {
     password += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -133,8 +132,7 @@ export const addCompany = asyncHandler(async (req, res) => {
     PANNumber,
     type,
     CINNumber,
-    isActive
-
+    isActive,
   } = req.body;
 
   // get logo path
@@ -153,7 +151,7 @@ export const addCompany = asyncHandler(async (req, res) => {
     isActive: true,
     type,
     isActivatedOnce: false,
-    CINNumber
+    CINNumber,
   });
 
   let message = "Company added successfully";
@@ -165,13 +163,15 @@ export const addCompany = asyncHandler(async (req, res) => {
 
     // Create admin for this company
     const user = await Admin.create({
-      username: company.name,
-      email: company.email,
-      password: hashedPassword,
-      role: "user",
-      isActive: true,
-      companyId: company._id,
-      
+      username: company.name.replace(/\s+/g, "") + "@1711",
+        email: company.email,
+        password: hashedPassword,
+        role: "user",
+        isActive: true,
+        companyId: company._id,
+        firstName : company.name,
+        lastName : company.name,
+        instituteName : company.name,
     });
 
     // Mark first activation
@@ -235,25 +235,44 @@ export const updateCompany = asyncHandler(async (req, res) => {
 // Delete Company
 export const deleteCompany = asyncHandler(async (req, res) => {
   const { id } = req.params;
-   const adminExists = await Admin.findOne({ companyId: id });
-   if (adminExists) {
+
+  // Check if id is valid MongoDB ObjectId
+  if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({
       success: false,
-      message: "Company cannot be deleted because users are associated with it",
+      message: "Invalid Company ID",
     });
   }
-  const company = await Company.findByIdAndDelete(id);
+
+  // Check if company exists
+  const company = await Company.findById(id);
   if (!company) {
     return res.status(404).json({
       success: false,
       message: "Company not found",
     });
   }
+
+  // Check if any Admin is linked with this company
+  const adminExists = await Admin.findOne({ companyId: id });
+  if (adminExists) {
+    return res.status(400).json({
+      success: false,
+      message:
+        "Company cannot be deleted because users/admins are associated with it",
+    });
+  }
+
+  // If no admin linked → delete company
+  await Company.findByIdAndDelete(id);
+
   res.status(200).json({
     success: true,
     message: "Company deleted successfully",
   });
 });
+
+
 //  Company Activation
 export const activateCompany = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -279,12 +298,15 @@ export const activateCompany = asyncHandler(async (req, res) => {
 
       // Create Admin for this company
       let user = new Admin({
-        username: company.name,
+        username: company.name.replace(/\s+/g, "") + "@1711",
         email: company.email,
         password: hashedPassword,
         role: "user",
         isActive: true,
         companyId: company._id,
+        firstName : company.name,
+        lastName : company.name,
+        instituteName : company.name,
       });
 
       await user.save();
@@ -315,10 +337,7 @@ export const activateCompany = asyncHandler(async (req, res) => {
     }
   } else {
     // Deactivation
-    await Admin.findOneAndUpdate(
-      { email: company.email },
-      { isActive: false }
-    );
+    await Admin.findOneAndUpdate({ email: company.email }, { isActive: false });
     message = `Company deactivated successfully`;
   }
 
@@ -342,10 +361,9 @@ export const recentlyRegisteredCompanies = asyncHandler(async (req, res) => {
       logo: company.logo ? imageToBase64(company.logo) : "",
     };
   });
-  
+
   res.status(200).json({
     success: true,
     data: companiesWithBase64Logo,
   });
 });
-
