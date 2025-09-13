@@ -1,5 +1,7 @@
 import State from "../models/States.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import imageToBase64 from "../utils/imageToBase64.js";
+
 
 // carte  new state 
 export const createState = asyncHandler(async (req, res) => {
@@ -11,12 +13,28 @@ export const createState = asyncHandler(async (req, res) => {
     res.status(201).json(state);
 
 });
-
 // get all states
 export const getAllStates = asyncHandler(async (req, res) => {
-    const states = await State.find({});
-    res.json(states);
+  const states = await State.find({}).populate("country", "flag"); 
+
+  const statesWithFlag = states.map((state) => {
+    const obj = state.toObject();
+
+    // country object ko hata do
+    delete obj.country;
+
+    return {
+      ...obj,
+      flag: state.country?.flag ? imageToBase64(state.country.flag) : "",
+    };
+  });
+
+  res.status(200).json({
+    success: true,
+    data: statesWithFlag,
+  });
 });
+
 
 // get state by id
 export const getStateById = asyncHandler(async (req, res) => {

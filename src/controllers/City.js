@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import City from "../models/City.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import imageToBase64 from "../utils/imageToBase64.js";
 
 
 // carte  new state
@@ -13,9 +14,37 @@ export const createCity = asyncHandler(async (req, res) => {
 
 // get all states
 export const getAllCitys = asyncHandler(async (req, res) => {
-    const citys = await City.find({});
-    res.json(citys);
+  const citys = await City.find({})
+    .populate({
+      path: "state",
+      populate: {
+        path: "country",
+        select: "flag", // sirf flag lana
+      },
+      select: "country", // state ka sirf country chahiye
+    });
+
+  const citysWithFlag = citys.map((city) => {
+    const obj = city.toObject();
+
+    return {
+      _id: obj._id,
+      name: obj.name,
+      code: obj.code,
+      createdAt: obj.createdAt,
+      updatedAt: obj.updatedAt,
+      flag: city.state?.country?.flag
+        ? imageToBase64(city.state.country.flag)
+        : "",
+    };
+  });
+
+  res.status(200).json({
+    success: true,
+    data: citysWithFlag,
+  });
 });
+
 
 // get state by id
 export const getCityById = asyncHandler(async (req, res) => {
