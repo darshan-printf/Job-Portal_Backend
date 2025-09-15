@@ -24,6 +24,7 @@ export const register = asyncHandler(async (req, res) => {
         lastName,
         username,
         email,
+        isActive : true,
         password: hashedPassword,
         instituteName
     });
