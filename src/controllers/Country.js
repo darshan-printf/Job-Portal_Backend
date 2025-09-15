@@ -3,19 +3,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import State from "../models/States.js";
 import fs from "fs";
 import path from "path";
-
-
-// Utility function to convert image file to base64
-const imageToBase64 = (filePath) => {
-  try {
-    const fullPath = path.resolve(filePath);
-    const file = fs.readFileSync(fullPath);
-    const mimeType = path.extname(fullPath).slice(1);
-    return `data:image/${mimeType};base64,${file.toString("base64")}`;
-  } catch (err) {
-    return "";
-  }
-};
+import imageToBase64 from "../utils/imageToBase64.js";
 
 // Create a new country
 export const createCountry = asyncHandler(async (req, res) => {

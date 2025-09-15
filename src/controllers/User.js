@@ -5,20 +5,8 @@ import bcrypt from 'bcryptjs';
 import path from 'path';
 import fs from 'fs';
 import Company from "../models/Company.js";
+import imageToBase64 from "../utils/imageToBase64.js";
 
-
-
-// Utility function to convert image file to base64
-const imageToBase64 = (filePath) => {
-    try {
-        const fullPath = path.resolve(filePath); // resolve to absolute path
-        const file = fs.readFileSync(fullPath);
-        const mimeType = path.extname(fullPath).slice(1); // e.g., jpg, png
-        return `data:image/${mimeType};base64,${file.toString('base64')}`;
-    } catch (err) {
-        return ''; // fallback if image not found
-    }
-};
 
 // add user
 export const useAdd = asyncHandler(async (req, res) => {

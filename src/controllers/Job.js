@@ -1,6 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import mongoose from "mongoose";
 import Job from "../models/Job.js";
+import imageToBase64 from "../utils/imageToBase64.js";
 
 
 
@@ -10,11 +11,29 @@ export const addJobAdmin = asyncHandler(async (req, res) => {
     res.json(job);
 });
 
-// get all jobs
 export const getAllJobs = asyncHandler(async (req, res) => {
-    const jobs = await Job.find();
-    res.json(jobs);
+    const jobs = await Job.find()
+        .select("title  experience salary type  ")
+        .populate("country", "name")
+        .populate("state", "name")
+        .populate("city", "name")
+
+    // convert populated objects into plain strings
+    const formattedJobs = jobs.map(job => ({
+        _id: job._id,
+        title: job.title,
+        experience: job.experience,
+        salary: job.salary,
+        type: job.type,
+        country: job.country?.name || null,
+        state: job.state?.name || null,
+        city: job.city?.name || null
+    }));
+
+    res.json(formattedJobs);
 });
+
+
 
 // get job by id
 export const getJobById = asyncHandler(async (req, res) => {

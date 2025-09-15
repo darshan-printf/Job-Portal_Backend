@@ -6,18 +6,10 @@ import path from "path";
 import { sendEmail } from "../utils/email.js";
 import bcrypt from "bcryptjs";
 import Admin from "../models/Admin.js";
+import imageToBase64 from "../utils/imageToBase64.js";
 
-// Utility function to convert image file to base64
-const imageToBase64 = (filePath) => {
-  try {
-    const fullPath = path.resolve(filePath);
-    const file = fs.readFileSync(fullPath);
-    const mimeType = path.extname(fullPath).slice(1);
-    return `data:image/${mimeType};base64,${file.toString("base64")}`;
-  } catch (err) {
-    return "";
-  }
-};
+
+
 // Utility function to generate a random password
 function generatePassword(length = 6) {
   let chars = "0123456789";
