@@ -2,17 +2,27 @@ import mongoose from "mongoose";
 
 
 const jobSchema = new mongoose.Schema({
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', required: true },
-    Country: { type: mongoose.Schema.Types.ObjectId, ref: 'Country', required: true },
-    State: { type: mongoose.Schema.Types.ObjectId, ref: 'State', required: true },
-    City: { type: mongoose.Schema.Types.ObjectId, ref: 'City', required: true },
-    Education: { type: mongoose.Schema.Types.ObjectId, ref: 'Education', required: true },
+    companyId: { type: mongoose.Schema.Types.ObjectId, ref: "Company", required: false },
     title: { type: String, required: true },
     description: { type: String, required: true },
     experience: { type: String, required: true },
-    email: { type: String, required: true },
-    phone: { type: String, required: true },
-
+    fild: { type: String, required: true },
+    country: { type: mongoose.Schema.Types.ObjectId, ref: 'Country', required: true },
+    state: { type: mongoose.Schema.Types.ObjectId, ref: 'State', required: true },
+    city: { type: mongoose.Schema.Types.ObjectId, ref: 'City', required: true },
+    salary: { type: Number, required: false },
+    workingHours: { type: String, required: false },
+    type: { type: String, required: true }, 
+    skills: { type: String, required: false },
+    tool: { type: String, required: false },
+    flexibleWorkingHours: { type: Boolean, required: true }, 
+    sift: { type: String, required: true },
+    bondTime: { type: String, required: false },
+    bondDescription: { type: String, required: false },
+    noticePeriod: { type: String, required: false },
+    benifits: { type: String, required: false },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },   
 }, {timestamps: true});  // enable timestamps use createdAt and updatedAt
     
 const Job = mongoose.model("Job", jobSchema);
