@@ -1,6 +1,8 @@
 import State from "../models/States.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import imageToBase64 from "../utils/imageToBase64.js";
+import mongoose from "mongoose";
+
 
 
 // carte  new state 
@@ -26,6 +28,7 @@ export const getAllStates = asyncHandler(async (req, res) => {
     return {
       ...obj,
       flag: state.country?.flag ? imageToBase64(state.country.flag) : "",
+      countryId: state.country?._id,
     };
   });
 
@@ -34,7 +37,6 @@ export const getAllStates = asyncHandler(async (req, res) => {
     data: statesWithFlag,
   });
 });
-
 
 // get state by id
 export const getStateById = asyncHandler(async (req, res) => {
@@ -48,8 +50,6 @@ export const getStateById = asyncHandler(async (req, res) => {
 });
 
 // update state by id
-import mongoose from "mongoose";
-
 export const updateState = asyncHandler(async (req, res) => {
     const { id, name, code, countryId } = req.body;
 
@@ -80,8 +80,6 @@ export const updateState = asyncHandler(async (req, res) => {
     res.status(200).json(state);
 });
 
-
-
 // delete state by id
 export const deleteState = asyncHandler(async (req, res) => {
     const { id } = req.params;
@@ -102,3 +100,5 @@ export const deleteState = asyncHandler(async (req, res) => {
 
     res.json({ message: "State deleted successfully" });
 });
+
+

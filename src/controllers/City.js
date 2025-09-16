@@ -33,10 +33,10 @@ export const getAllCitys = asyncHandler(async (req, res) => {
       code: obj.code,
       createdAt: obj.createdAt,
       updatedAt: obj.updatedAt,
-      flag: city.state?.country?.flag
-        ? imageToBase64(city.state.country.flag)
-        : "",
-    };
+      flag:imageToBase64(city.state.country.flag),
+      stateId: obj.state?._id,
+
+     };
   });
 
   res.status(200).json({

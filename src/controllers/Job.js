@@ -13,10 +13,11 @@ export const addJobAdmin = asyncHandler(async (req, res) => {
 
 export const getAllJobs = asyncHandler(async (req, res) => {
     const jobs = await Job.find()
-        .select("title  experience salary type  ")
+        .select("title experience salary type companyId")
         .populate("country", "name")
         .populate("state", "name")
         .populate("city", "name")
+        .populate("companyId", "name logo"); // <- Company ke fields yaha do
 
     // convert populated objects into plain strings
     const formattedJobs = jobs.map(job => ({
@@ -27,11 +28,20 @@ export const getAllJobs = asyncHandler(async (req, res) => {
         type: job.type,
         country: job.country?.name || null,
         state: job.state?.name || null,
-        city: job.city?.name || null
+        city: job.city?.name || null,
+        company: job.companyId
+            ? {
+                _id: job.companyId._id,
+                name: job.companyId.name,
+                logo: imageToBase64(job.companyId.logo),
+
+            }
+            : null,
     }));
 
     res.json(formattedJobs);
 });
+
 
 
 
