@@ -11,6 +11,7 @@ export const addJobAdmin = asyncHandler(async (req, res) => {
     res.json(job);
 });
 
+// get all jobs
 export const getAllJobs = asyncHandler(async (req, res) => {
     const jobs = await Job.find()
         .select("title experience salary type companyId")
@@ -42,9 +43,6 @@ export const getAllJobs = asyncHandler(async (req, res) => {
     res.json(formattedJobs);
 });
 
-
-
-
 // get job by id
 export const getJobById = asyncHandler(async (req, res) => {
     const job = await Job.findById(req.params.id);
@@ -61,6 +59,8 @@ export const deleteJob = asyncHandler(async (req, res) => {
     }
     res.json({ message: "Job deleted", job });
 });
+
+
 
 // update job by id (id from body)
 export const updateJob = asyncHandler(async (req, res) => {
