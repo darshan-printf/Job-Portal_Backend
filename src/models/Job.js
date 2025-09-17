@@ -6,7 +6,7 @@ const jobSchema = new mongoose.Schema({
     title: { type: String, required: true },
     description: { type: String, required: true },
     experience: { type: String, required: true },
-    fild: { type: String, required: false },
+    field: { type: String, required: false }, 
     country: { type: mongoose.Schema.Types.ObjectId, ref: 'Country', required: true },
     state: { type: mongoose.Schema.Types.ObjectId, ref: 'State', required: true },
     city: { type: mongoose.Schema.Types.ObjectId, ref: 'City', required: true },
@@ -16,14 +16,14 @@ const jobSchema = new mongoose.Schema({
     skills: { type: String, required: false },
     tool: { type: String, required: false },
     flexibleWorkingHours: { type: Boolean, required: true }, 
-    sift: { type: String, required: false },
+    shift: { type: String, required: false },
     bondTime: { type: String, required: false },
     bondDescription: { type: String, required: false },
     noticePeriod: { type: String, required: false },
-    benifits: { type: String, required: false },
+    benefits: { type: String, required: false },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },   
-}, {timestamps: true});  // enable timestamps use createdAt and updatedAt
+}, {timestamps: true});
     
 const Job = mongoose.model("Job", jobSchema);
 
