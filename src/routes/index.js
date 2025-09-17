@@ -10,6 +10,7 @@ import jobRoute from "./JobRoutes.js";
 import Reports from "./Reports.js";
 import companyRoute from "./CompanyRoute.js";
 import Inbox from "./Inbox.js";
+import feedback from "./Feedback.js";
 
 const rootRouter = Router();
 
@@ -24,6 +25,9 @@ rootRouter.use('/job',jobRoute);
 rootRouter.use('/reports',Reports);
 rootRouter.use('/company',companyRoute);
 rootRouter.use('/inbox',Inbox);
+rootRouter.use('/feedback',feedback);
+
+
 
 
 export default rootRouter;
