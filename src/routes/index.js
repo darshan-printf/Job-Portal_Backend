@@ -9,6 +9,7 @@ import educationRoute from "./Education.js";
 import jobRoute from "./JobRoutes.js";
 import Reports from "./Reports.js";
 import companyRoute from "./CompanyRoute.js";
+import Inbox from "./Inbox.js";
 
 const rootRouter = Router();
 
@@ -22,5 +23,7 @@ rootRouter.use('/Education',educationRoute);
 rootRouter.use('/job',jobRoute);
 rootRouter.use('/reports',Reports);
 rootRouter.use('/company',companyRoute);
+rootRouter.use('/inbox',Inbox);
+
 
 export default rootRouter;
