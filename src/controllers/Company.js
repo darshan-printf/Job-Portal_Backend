@@ -19,7 +19,6 @@ function generatePassword(length = 6) {
   }
   return password;
 }
-
 // Company Registration
 export const registerCompany = asyncHandler(async (req, res) => {
   const {
