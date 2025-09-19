@@ -2,8 +2,6 @@ import Admin from "../models/Admin.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import mongoose from "mongoose";
 import bcrypt from 'bcryptjs';
-import path from 'path';
-import fs from 'fs';
 import Company from "../models/Company.js";
 import imageToBase64 from "../utils/imageToBase64.js";
 
