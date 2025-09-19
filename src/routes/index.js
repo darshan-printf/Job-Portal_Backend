@@ -11,6 +11,7 @@ import Reports from "./Reports.js";
 import companyRoute from "./CompanyRoute.js";
 import Inbox from "./Inbox.js";
 import feedback from "./Feedback.js";
+import teamRoute from "./Team.js";
 
 const rootRouter = Router();
 
@@ -26,8 +27,6 @@ rootRouter.use('/reports',Reports);
 rootRouter.use('/company',companyRoute);
 rootRouter.use('/inbox',Inbox);
 rootRouter.use('/feedback',feedback);
-
-
-
+rootRouter.use('/team',teamRoute);
 
 export default rootRouter;
