@@ -19,7 +19,9 @@ export const register = asyncHandler(async (req, res) => {
         email,
         isActive : true,
         password: hashedPassword,
-        instituteName
+        instituteName,
+        profileImage: req.files?.profileImage?.[0]?.path || "",
+
     });
     await newAdmin.save();
     res.status(201).json({ message: 'Admin created', admin: newAdmin });
