@@ -9,7 +9,11 @@ export const createCity = asyncHandler(async (req, res) => {
     const { name, code, stateId } = req.body;
     const city = new City({ name, code, state: stateId });
     await city.save();
-    res.status(201).json(city);
+    res.status(201).json({
+        success: true,
+        message: "City created successfully",
+        data: city,
+    });
 });
 
 // get all states
@@ -57,7 +61,11 @@ export const updateCity = asyncHandler(async (req, res) => {
     if (!city) {
         return res.status(404).json({ message: "City not found" });
     }
-    res.json(city);
+    res.json({
+        success: true,
+        message: "City updated successfully",
+        data: city,
+    });
 });
 
 // delete state by id
