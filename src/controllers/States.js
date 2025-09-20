@@ -94,6 +94,9 @@ export const deleteState = asyncHandler(async (req, res) => {
     if (!state) {
         return res.status(404).json({ message: "State not found" });
     }
+    if (state.country) {
+        return res.status(400).json({ message: "Cannot delete state with related cities. Delete related cities first." });
+    }
 
     // Delete the state
     await State.findByIdAndDelete(id);

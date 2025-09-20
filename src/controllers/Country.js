@@ -11,7 +11,11 @@ export const createCountry = asyncHandler(async (req, res) => {
     const flag = req.files?.flag?.[0]?.path || "";
     const country = new Country({ name, code, flag });
     await country.save();
-    res.status(201).json(country);
+    res.status(201).json({
+      success: true,
+      data: country,
+      message: "Country added successfully",
+    });
 });
 
 // Get all countries
@@ -75,7 +79,11 @@ export const updateCountry = asyncHandler(async (req, res) => {
 
   await country.save();
 
-  res.json(country);
+  res.json({
+    success: true,
+    data: country,
+    message: "Country updated successfully",
+  });
 });
 
 
@@ -83,11 +91,9 @@ export const updateCountry = asyncHandler(async (req, res) => {
 // Delete a country by ID
 export const deleteCountry = asyncHandler(async (req, res) => {
     const country = await Country.findById(req.params.id);
-    
     if (!country) {
         return res.status(404).json({ message: "Country not found" });
     }
-
     // Check if any states reference this country
     const relatedStates = await State.find({ country: req.params.id });
 
