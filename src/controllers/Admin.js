@@ -46,6 +46,9 @@ export const updateProfile = asyncHandler(async (req, res) => {
     success: true,
     message: "Profile updated",
     data: admin,
+    profileImage: admin.profileImage ? imageToBase64(admin.profileImage) : '',
+    firstName: admin.firstName,
+    lastName: admin.lastName,
   });
 });
 // get admin by id

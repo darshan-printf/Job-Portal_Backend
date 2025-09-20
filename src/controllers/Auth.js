@@ -2,6 +2,7 @@ import Admin from "../models/Admin.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken";
 import bcrypt from 'bcryptjs';
+import imageToBase64 from "../utils/imageToBase64.js";
 
 // admin register api
 export const register = asyncHandler(async (req, res) => {
@@ -48,6 +49,9 @@ export const login = asyncHandler(async (req, res) => {
         message: 'Login successful',
         id: admin._id,
         role: admin.role,
-        token: token
+        token: token,
+        profileImage:imageToBase64(admin.profileImage),
+        firstName: admin.firstName,
+        lastName: admin.lastName,
     });
 });
