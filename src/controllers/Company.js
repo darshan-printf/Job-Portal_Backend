@@ -221,6 +221,7 @@ export const updateCompany = asyncHandler(async (req, res) => {
   res.status(200).json({
     success: true,
     data: company,
+    message: "Company updated successfully",
   });
 });
 // Delete Company
