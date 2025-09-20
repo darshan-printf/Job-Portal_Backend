@@ -3,8 +3,9 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import mongoose from "mongoose";
 import imageToBase64 from "../utils/imageToBase64.js";
 import bcrypt from "bcryptjs";
+import fs from "fs";
+import path from "path";
 
-// admin update profile api
 export const updateProfile = asyncHandler(async (req, res) => {
   const { id, firstName, lastName, username, email, instituteName } = req.body;
 
@@ -18,6 +19,12 @@ export const updateProfile = asyncHandler(async (req, res) => {
   // agar nayi image aayi hai to path lo
   const profileImage = req.files?.profileImage?.[0]?.path || null;
 
+  // current admin data lao
+  const existingAdmin = await Admin.findById(id).exec();
+  if (!existingAdmin) {
+    return res.status(404).json({ message: "Admin not found" });
+  }
+
   const updateData = {
     firstName,
     lastName,
@@ -26,8 +33,17 @@ export const updateProfile = asyncHandler(async (req, res) => {
     instituteName,
   };
 
-  // agar image mili hai to purani replace karo
   if (profileImage) {
+    // agar purani image hai to usko delete karo
+    if (existingAdmin.profileImage) {
+      try {
+        fs.unlinkSync(path.resolve(existingAdmin.profileImage));
+      } catch (err) {
+        console.error("Failed to delete old image:", err.message);
+      }
+    }
+
+    // nayi image set karo
     updateData.profileImage = profileImage;
   }
 
@@ -36,12 +52,9 @@ export const updateProfile = asyncHandler(async (req, res) => {
     runValidators: true,
   }).exec();
 
-  if (!admin) {
-    return res.status(404).json({ message: "Admin not found" });
-  }
-
   res.json({ message: "Profile updated", admin });
 });
+
 
 // get admin by id
 export const getAdminById = asyncHandler(async (req, res) => {
@@ -66,7 +79,7 @@ export const getAdminById = asyncHandler(async (req, res) => {
   res.json(adminObj);
 });
 
-// 
+// change admin password
 export const changePassword = asyncHandler(async (req, res) => {
   const { id, oldPassword, newPassword } = req.body;
 

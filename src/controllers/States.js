@@ -1,4 +1,5 @@
 import State from "../models/States.js";
+import City from "../models/City.js"; 
 import { asyncHandler } from "../utils/asyncHandler.js";
 import imageToBase64 from "../utils/imageToBase64.js";
 import mongoose from "mongoose";
@@ -12,7 +13,11 @@ export const createState = asyncHandler(async (req, res) => {
     if (!countryId) {
         return res.status(404).json({ message: "Country not found" });
     }
-    res.status(201).json(state);
+    res.status(201).json({
+      success: true,
+      data: state,
+      message: "State added successfully",
+    });
 
 });
 // get all states
@@ -86,7 +91,7 @@ export const deleteState = asyncHandler(async (req, res) => {
 
     // Validate ObjectId format
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ message: "Invalid state ID " });
+        return res.status(400).json({ message: "Invalid state ID" });
     }
 
     // Find state by ID
@@ -94,8 +99,13 @@ export const deleteState = asyncHandler(async (req, res) => {
     if (!state) {
         return res.status(404).json({ message: "State not found" });
     }
-    if (state.country) {
-        return res.status(400).json({ message: "Cannot delete state with related cities. Delete related cities first." });
+
+    // Check if any city is linked with this state
+    const cityExists = await City.findOne({ state: id });
+    if (cityExists) {
+        return res.status(400).json({
+            message: "Cannot delete state with related cities. Delete related cities first."
+        });
     }
 
     // Delete the state
