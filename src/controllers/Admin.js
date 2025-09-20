@@ -6,25 +6,20 @@ import bcrypt from "bcryptjs";
 import fs from "fs";
 import path from "path";
 
+// update admin profile
 export const updateProfile = asyncHandler(async (req, res) => {
   const { id, firstName, lastName, username, email, instituteName } = req.body;
-
   if (!id) {
     return res.status(400).json({ message: "Admin ID is required" });
   }
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ message: "Invalid Admin ID format" });
   }
-
-  // agar nayi image aayi hai to path lo
   const profileImage = req.files?.profileImage?.[0]?.path || null;
-
-  // current admin data lao
   const existingAdmin = await Admin.findById(id).exec();
   if (!existingAdmin) {
     return res.status(404).json({ message: "Admin not found" });
   }
-
   const updateData = {
     firstName,
     lastName,
@@ -32,9 +27,7 @@ export const updateProfile = asyncHandler(async (req, res) => {
     email,
     instituteName,
   };
-
   if (profileImage) {
-    // agar purani image hai to usko delete karo
     if (existingAdmin.profileImage) {
       try {
         fs.unlinkSync(path.resolve(existingAdmin.profileImage));
@@ -42,20 +35,19 @@ export const updateProfile = asyncHandler(async (req, res) => {
         console.error("Failed to delete old image:", err.message);
       }
     }
-
-    // nayi image set karo
     updateData.profileImage = profileImage;
   }
-
   const admin = await Admin.findByIdAndUpdate(id, updateData, {
     new: true,
     runValidators: true,
   }).exec();
 
-  res.json({ message: "Profile updated", admin });
+  res.json({
+    success: true,
+    message: "Profile updated",
+    data: admin,
+  });
 });
-
-
 // get admin by id
 export const getAdminById = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -78,34 +70,28 @@ export const getAdminById = asyncHandler(async (req, res) => {
 
   res.json(adminObj);
 });
-
 // change admin password
 export const changePassword = asyncHandler(async (req, res) => {
   const { id, oldPassword, newPassword } = req.body;
-
   if (!id || !oldPassword || !newPassword) {
     return res.status(400).json({ message: "Admin ID, old password and new password are required" });
   }
-
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ message: "Invalid Admin ID format" });
   }
-
   const admin = await Admin.findById(id).select("+password"); // ensure password field is included
   if (!admin) {
     return res.status(404).json({ message: "Admin not found" });
   }
-
-  // check old password
   const isMatch = await bcrypt.compare(oldPassword, admin.password);
   if (!isMatch) {
     return res.status(400).json({ message: "Old password is incorrect" });
   }
-
-  // hash new password
   const salt = await bcrypt.genSalt(10);
   admin.password = await bcrypt.hash(newPassword, salt);
   await admin.save();
-
-  res.json({ message: "Password changed successfully" });
+  res.json({
+    success: true,
+    message: "Password changed successfully",
+  });
 });
