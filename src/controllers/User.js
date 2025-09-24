@@ -5,7 +5,6 @@ import bcrypt from 'bcryptjs';
 import Company from "../models/Company.js";
 import imageToBase64 from "../utils/imageToBase64.js";
 
-
 // add user
 export const useAdd = asyncHandler(async (req, res) => {
   const { firstName, lastName, username, email, password, instituteName, companyId } = req.body;
@@ -156,7 +155,6 @@ export const deleteUser = asyncHandler(async (req, res) => {
     }
     res.json({ message: "User deleted", user });
 });
-
 
 // user Active & Deactive
 export const activeStatus = asyncHandler(async (req, res) => {

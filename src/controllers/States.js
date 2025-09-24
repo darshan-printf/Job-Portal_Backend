@@ -4,8 +4,6 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import imageToBase64 from "../utils/imageToBase64.js";
 import mongoose from "mongoose";
 
-
-
 // carte  new state 
 export const createState = asyncHandler(async (req, res) => {
     const { name, code, countryId } = req.body;
@@ -113,5 +111,3 @@ export const deleteState = asyncHandler(async (req, res) => {
 
     res.json({ message: "State deleted successfully" });
 });
-
-

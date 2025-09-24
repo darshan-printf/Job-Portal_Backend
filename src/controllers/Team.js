@@ -2,7 +2,6 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import imageToBase64 from "../utils/imageToBase64.js";
 import Team from "../models/Team.js";
 import fs from "fs";
-import path from "path";
 
 // add team
 export const addTeam = asyncHandler(async (req, res) => {
@@ -53,7 +52,6 @@ export const getTeamById = asyncHandler(async (req, res) => {
   res.json(teamWithBase64Image);
 });
 
-
 // update team by id
 export const updateTeam = asyncHandler(async (req, res) => {
   const { id, ...updateData } = req.body;
@@ -83,7 +81,6 @@ export const updateTeam = asyncHandler(async (req, res) => {
     updatedTeam,
   });
 });
-
 
 // delete team by id
 export const deleteTeam = asyncHandler(async (req, res) => {

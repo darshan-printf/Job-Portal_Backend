@@ -9,7 +9,6 @@ import Admin from "../models/Admin.js";
 import imageToBase64 from "../utils/imageToBase64.js";
 
 
-
 // Utility function to generate a random password
 function generatePassword(length = 6) {
   let chars = "0123456789";
@@ -263,7 +262,6 @@ export const deleteCompany = asyncHandler(async (req, res) => {
     message: "Company deleted successfully",
   });
 });
-
 
 //  Company Activation
 export const activateCompany = asyncHandler(async (req, res) => {

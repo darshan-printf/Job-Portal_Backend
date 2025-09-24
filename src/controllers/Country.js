@@ -53,7 +53,6 @@ export const getCountryById = asyncHandler(async (req, res) => {
   });
 });
 
-
 // Update a country by ID
 export const updateCountry = asyncHandler(async (req, res) => {
   const { id, name, code } = req.body;
@@ -86,8 +85,6 @@ export const updateCountry = asyncHandler(async (req, res) => {
   });
 });
 
-
-
 // Delete a country by ID
 export const deleteCountry = asyncHandler(async (req, res) => {
     const country = await Country.findById(req.params.id);
@@ -107,6 +104,3 @@ export const deleteCountry = asyncHandler(async (req, res) => {
 
     res.json({ message: "Country deleted successfully" });
 });
-
-
-

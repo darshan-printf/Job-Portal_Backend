@@ -49,7 +49,6 @@ export const getJobById = asyncHandler(async (req, res) => {
     res.json(job);
 });
 
-
 // delete job by id
 export const deleteJob = asyncHandler(async (req, res) => {
     const { id } = req.params;
@@ -59,8 +58,6 @@ export const deleteJob = asyncHandler(async (req, res) => {
     }
     res.json({ message: "Job deleted", job });
 });
-
-
 
 // update job by id (id from body)
 export const updateJob = asyncHandler(async (req, res) => {

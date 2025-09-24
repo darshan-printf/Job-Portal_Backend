@@ -6,7 +6,6 @@ import Admin from "../models/Admin.js";
 import Job from "../models/Job.js";
 import Company from "../models/Company.js";
 
-
 // get total counts
 export const getTotalCounts = asyncHandler(async (req, res) => {
     const totalCountries = await Country.countDocuments();
@@ -26,4 +25,3 @@ export const getTotalCounts = asyncHandler(async (req, res) => {
 
     });
 });
-
