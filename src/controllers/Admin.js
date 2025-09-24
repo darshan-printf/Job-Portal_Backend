@@ -9,17 +9,21 @@ import path from "path";
 // update admin profile
 export const updateProfile = asyncHandler(async (req, res) => {
   const { id, firstName, lastName, username, email, instituteName } = req.body;
+
   if (!id) {
     return res.status(400).json({ message: "Admin ID is required" });
   }
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ message: "Invalid Admin ID format" });
   }
-  const profileImage = req.files?.profileImage?.[0]?.path || null;
+
+  const profileImagePath = req.files?.profileImage?.[0]?.path || null;
+
   const existingAdmin = await Admin.findById(id).exec();
   if (!existingAdmin) {
     return res.status(404).json({ message: "Admin not found" });
   }
+
   const updateData = {
     firstName,
     lastName,
@@ -27,16 +31,26 @@ export const updateProfile = asyncHandler(async (req, res) => {
     email,
     instituteName,
   };
-  if (profileImage) {
+
+  if (profileImagePath) {
+    // normalize relative path for DB (uploads/filename.png)
+    const relativePath = path.join("uploads", path.basename(profileImagePath));
+
+    // delete old image if exists
     if (existingAdmin.profileImage) {
-      try {
-        fs.unlinkSync(path.resolve(existingAdmin.profileImage));
-      } catch (err) {
-        console.error("Failed to delete old image:", err.message);
+      const oldImagePath = path.join(process.cwd(), existingAdmin.profileImage);
+      if (fs.existsSync(oldImagePath)) {
+        try {
+          fs.unlinkSync(oldImagePath);
+        } catch (err) {
+          // silently ignore error
+        }
       }
     }
-    updateData.profileImage = profileImage;
+
+    updateData.profileImage = relativePath;
   }
+
   const admin = await Admin.findByIdAndUpdate(id, updateData, {
     new: true,
     runValidators: true,
@@ -46,11 +60,14 @@ export const updateProfile = asyncHandler(async (req, res) => {
     success: true,
     message: "Profile updated",
     data: admin,
-    profileImage: admin.profileImage ? imageToBase64(admin.profileImage) : '',
+    profileImage: admin.profileImage
+      ? imageToBase64(path.join(process.cwd(), admin.profileImage))
+      : "",
     firstName: admin.firstName,
     lastName: admin.lastName,
   });
 });
+
 // get admin by id
 export const getAdminById = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -68,16 +85,23 @@ export const getAdminById = asyncHandler(async (req, res) => {
   const adminObj = admin.toObject();
 
   // Convert images to base64 if available
-  adminObj.profileImage = admin.profileImage ? imageToBase64(admin.profileImage) : '';
-  adminObj.logo = admin.logo ? imageToBase64(admin.logo) : '';
+  adminObj.profileImage = admin.profileImage
+    ? imageToBase64(admin.profileImage)
+    : "";
+  adminObj.logo = admin.logo ? imageToBase64(admin.logo) : "";
 
   res.json(adminObj);
 });
+
 // change admin password
 export const changePassword = asyncHandler(async (req, res) => {
   const { id, oldPassword, newPassword } = req.body;
   if (!id || !oldPassword || !newPassword) {
-    return res.status(400).json({ message: "Admin ID, old password and new password are required" });
+    return res
+      .status(400)
+      .json({
+        message: "Admin ID, old password and new password are required",
+      });
   }
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({ message: "Invalid Admin ID format" });
