@@ -12,6 +12,7 @@ import companyRoute from "./CompanyRoute.js";
 import Inbox from "./Inbox.js";
 import feedback from "./Feedback.js";
 import teamRoute from "./Team.js";
+import allLocationRoute from "./AllLocation.js";
 
 const rootRouter = Router();
 
@@ -28,5 +29,7 @@ rootRouter.use('/company',companyRoute);
 rootRouter.use('/inbox',Inbox);
 rootRouter.use('/feedback',feedback);
 rootRouter.use('/team',teamRoute);
+rootRouter.use('/allLocation',allLocationRoute);
+
 
 export default rootRouter;

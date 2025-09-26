@@ -357,3 +357,35 @@ export const recentlyRegisteredCompanies = asyncHandler(async (req, res) => {
     data: companiesWithBase64Logo,
   });
 });
+
+export const getCompanyByUser = asyncHandler(async (req, res) => {
+  const userId = req.admin?._id;
+  const user = await Admin.findById(userId);
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: "User not found",
+    });
+  }
+  if (!user.companyId) {
+    return res.status(400).json({
+      success: false,
+      message: "User does not have a company assigned",
+    });
+  }
+  const company = await Company.findById(user.companyId);
+  if (!company) {
+    return res.status(404).json({
+      success: false,
+      message: "Company not found",
+    });
+  }
+  const companyWithBase64Logo = {
+    ...company.toObject(),
+    logo: company.logo ? imageToBase64(company.logo) : "",
+  };
+  res.status(200).json({
+    success: true,
+    data: companyWithBase64Logo,
+  });
+});
