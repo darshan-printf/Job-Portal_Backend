@@ -129,12 +129,7 @@ export const getAllJobsByUser = asyncHandler(async (req, res) => {
   }
 
   const jobs = await Job.find({ companyId: user.companyId })
-    .select("title experience salary type companyId package")
-    .populate("country", "name")
-    .populate("state", "name")
-    .populate("city", "name")
-    .populate("companyId", " logo");
-
+    .select("title experience salary type companyId package");
   res.json(
     jobs.map(job => ({
       _id: job._id,
@@ -142,17 +137,7 @@ export const getAllJobsByUser = asyncHandler(async (req, res) => {
       experience: job.experience,
       salary: job.salary,
       type: job.type,
-      country: job.country?.name || null,
-      state: job.state?.name || null,
-      city: job.city?.name || null,
       package: job.package || null,
-      company: job.companyId
-        ? {
-            _id: job.companyId._id,
-            name: job.companyId.name,
-            logo: imageToBase64(job.companyId.logo),
-          }
-        : null,
     }))
   );
 });
