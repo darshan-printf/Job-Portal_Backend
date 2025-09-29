@@ -389,3 +389,19 @@ export const getCompanyByUser = asyncHandler(async (req, res) => {
     data: companyWithBase64Logo,
   });
 });
+
+// get all companies
+export const getAllCompaniesPublic = asyncHandler(async (req, res) => {
+  const companies = await Company.find();
+  const companiesWithBase64Logo = companies.map((company) => {
+    return {
+      name: company.name,
+      website: company.website,
+      logo: imageToBase64(company.logo),
+    };
+  });
+  res.status(200).json({
+    success: true,
+    data: companiesWithBase64Logo,
+  });
+});
