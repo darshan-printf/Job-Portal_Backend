@@ -13,6 +13,7 @@ import Inbox from "./Inbox.js";
 import feedback from "./Feedback.js";
 import teamRoute from "./Team.js";
 import allLocationRoute from "./AllLocation.js";
+import candidateRoute from "./Candidate.js";
 
 const rootRouter = Router();
 
@@ -30,6 +31,8 @@ rootRouter.use('/inbox',Inbox);
 rootRouter.use('/feedback',feedback);
 rootRouter.use('/team',teamRoute);
 rootRouter.use('/allLocation',allLocationRoute);
+rootRouter.use('/candidate',candidateRoute);
+
 
 
 export default rootRouter;
