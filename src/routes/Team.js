@@ -10,5 +10,7 @@ teamRoute.get("/get",protect,authorize("admin"),getAllTeam);
 teamRoute.get('/get/:id',protect,authorize("admin"),getTeamById);
 teamRoute.put('/update',protect,authorize("admin"), upload.fields([  { name: 'image', maxCount: 1 }]), updateTeam);
 teamRoute.delete('/delete/:id',protect,authorize("admin"),deleteTeam);
+teamRoute.get('/getAllTeamPublic',getAllTeam);
+
 
 export default teamRoute;
