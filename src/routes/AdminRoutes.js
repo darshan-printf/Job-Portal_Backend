@@ -6,9 +6,9 @@ import upload from "../middleware/uploadMiddleware.js";
 
 const adminRouter = Router();
 
-adminRouter.post("/updateProfile",protect,authorize("admin"), upload.fields([  { name: 'profileImage', maxCount: 1 }]), updateProfile);
-adminRouter.get("/get/:id",protect,authorize("admin"),getAdminById);
-adminRouter.put("/changepassword" ,protect ,authorize("admin"),changePassword)
+adminRouter.post("/updateProfile",protect,authorize("admin","user" ), upload.fields([  { name: 'profileImage', maxCount: 1 }]), updateProfile);
+adminRouter.get("/get/:id",protect,authorize("admin","user"),getAdminById);
+adminRouter.put("/changepassword" ,protect ,authorize("admin","user"),changePassword)
 
 
 export default adminRouter;

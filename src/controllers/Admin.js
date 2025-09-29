@@ -30,6 +30,7 @@ export const updateProfile = asyncHandler(async (req, res) => {
     username,
     email,
     instituteName,
+    
   };
 
   if (profileImagePath) {
@@ -85,10 +86,8 @@ export const getAdminById = asyncHandler(async (req, res) => {
   const adminObj = admin.toObject();
 
   // Convert images to base64 if available
-  adminObj.profileImage = admin.profileImage
-    ? imageToBase64(admin.profileImage)
-    : "";
-  adminObj.logo = admin.logo ? imageToBase64(admin.logo) : "";
+  adminObj.profileImage =  imageToBase64(admin.profileImage);
+  
 
   res.json(adminObj);
 });
