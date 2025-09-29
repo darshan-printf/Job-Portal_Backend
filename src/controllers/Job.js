@@ -79,7 +79,12 @@ export const updateJob = asyncHandler(async (req, res) => {
     if (!job) {
         return res.status(404).json({ message: "Job not found" });
     }
-    res.json(job);
+    res.json(
+      {
+        message: "Job updated successfully",
+        job,
+      }
+    );
 });
 
 // add usar job  
