@@ -108,7 +108,12 @@ export const addJobUser = asyncHandler(async (req, res) => {
     companyId: user.companyId,
   });
 
-  res.status(201).json(job);
+  res.status(201).json(
+    {
+      message: "Job added successfully",
+      job,
+    }
+  );
 });
 
 // get all jobs by user
