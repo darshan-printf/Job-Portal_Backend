@@ -25,26 +25,36 @@ export const applyJob = asyncHandler(async (req, res) => {
 // get candidate by companyId
 export const getCandidateByCompanyId = asyncHandler(async (req, res) => {
   try {
-    // Admin ki id token se aayi hai (req.admin._id)
     const adminId = req.admin._id;
 
-    // Admin ka detail nikal ke uski companyId lena hoga
+    // Admin ka detail
     const admin = await Admin.findById(adminId);
     if (!admin) {
       return res.status(404).json({ message: "Admin not found" });
     }
 
-    // CompanyId admin ke document se milegi
     const companyId = admin.companyId;
 
-    // Ab candidate filter karte hain companyId ke basis pe
-    const candidates = await Candidate.find({ companyId });
+    // Candidate with job detail
+    let candidates = await Candidate.find({ companyId }).populate({
+      path: "jobId",
+      select: "title package",
+    });
 
     if (!candidates || candidates.length === 0) {
       return res
         .status(404)
         .json({ message: "No candidates found for this company" });
     }
+
+    // ✅ Resume ka full URL add karna
+    const baseUrl = process.env.BASE_URL 
+    candidates = candidates.map((c) => {
+      return {
+        ...c._doc,
+        resume: c.resume ? `${baseUrl}/${c.resume}` : null,
+      };
+    });
 
     res.status(200).json({
       message: "Candidates fetched successfully",
@@ -54,6 +64,7 @@ export const getCandidateByCompanyId = asyncHandler(async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
 
 // get candidate by id
 export const getCandidateById = asyncHandler(async (req, res) => {
