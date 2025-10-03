@@ -48,7 +48,7 @@ export const getCandidateByCompanyId = asyncHandler(async (req, res) => {
     }
 
     // ✅ Resume ka full URL add karna
-    const baseUrl = process.env.BASE_URL 
+    const baseUrl = process.env.BASE_URL;
     candidates = candidates.map((c) => {
       return {
         ...c._doc,
@@ -64,7 +64,6 @@ export const getCandidateByCompanyId = asyncHandler(async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
-
 
 // get candidate by id
 export const getCandidateById = asyncHandler(async (req, res) => {
@@ -126,5 +125,23 @@ HR Team`;
   res.status(200).json({
     message: "Candidate status updated successfully",
     candidate,
+  });
+});
+
+//  get list of candidate status scheduled
+export const getScheduledCandidates = asyncHandler(async (req, res) => {
+  const adminId = req.admin._id;
+  const admin = await Admin.findById(adminId);
+  if (!admin) {
+    return res.status(404).json({ message: "Admin not found" });
+  }
+  const companyId = admin.companyId;
+  const candidates = await Candidate.find({ companyId, status: "scheduled" });
+  if (!candidates || candidates.length === 0) {
+    return res.status(404).json({ message: "No candidates found" });
+  }
+  res.status(200).json({
+    message: "Scheduled candidates fetched successfully",
+    candidates,
   });
 });
