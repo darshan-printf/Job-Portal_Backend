@@ -3,6 +3,9 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import Candidate from "../models/Candidate.js";
 import Admin from "../models/Admin.js";
 import { sendEmail } from "../utils/email.js";
+import { rejectionEmailTemplate } from "../mail/rejectionEmailTemplate.js";
+
+
 
 // apply job
 export const applyJob = asyncHandler(async (req, res) => {
@@ -96,24 +99,9 @@ export const changeCandidateStatus = asyncHandler(async (req, res) => {
   candidate.status = status;
   await candidate.save();
 
-  // Handle email cases
+ // Rejection case handle with template
   if (status === "rejected") {
-    const subject = "Application Status - Rejected";
-    const text = `Dear ${candidate.name},
-
-We have reviewed your profile but unfortunately, you have not been shortlisted at this time.
-
-We wish you the best for your future.
-
-Regards,
-HR Team`;
-
-    const html = `
-      <p>Dear <b>${candidate.name}</b>,</p>
-      <p>We have reviewed your profile but unfortunately, you have not been shortlisted at this time.</p>
-      <p>We wish you the best for your future.</p>
-      <p>Regards,<br>HR Team</p>
-    `;
+    const { subject, text, html } = rejectionEmailTemplate(candidate.name);
 
     try {
       await sendEmail(candidate.email, subject, text, html);
@@ -136,7 +124,7 @@ export const getScheduledCandidates = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: "Admin not found" });
   }
   const companyId = admin.companyId;
-  // Candidate with job detail
+  // Candidate with job detail 
   const candidates = await Candidate.find({ companyId, status: "scheduled" }).populate({
     path: "jobId",
     select: "title package",

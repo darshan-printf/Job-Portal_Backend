@@ -7,6 +7,7 @@ import { sendEmail } from "../utils/email.js";
 import bcrypt from "bcryptjs";
 import Admin from "../models/Admin.js";
 import imageToBase64 from "../utils/imageToBase64.js";
+import { companyActivationEmailTemplate } from "../mail/companyActivationEmail.js";
 
 
 // Utility function to generate a random password
@@ -18,6 +19,7 @@ function generatePassword(length = 6) {
   }
   return password;
 }
+
 // Company Registration
 export const registerCompany = asyncHandler(async (req, res) => {
   const {
@@ -168,17 +170,14 @@ export const addCompany = asyncHandler(async (req, res) => {
     company.isActivatedOnce = true;
     await company.save();
 
-    // Send email
-    await sendEmail(
-      company.email,
-      "Your Company Account Activated",
-      `Hello ${company.name},\nYour account is now active.\n\nUsername: ${user.username}\nPassword: ${plainPassword}\n\nLogin and change your password immediately.`,
-      `<h3>Hello ${company.name},</h3>
-       <p>Your account has been <b>activated</b>.</p>
-       <p><b>Username:</b> ${user.username}</p>
-       <p><b>Password:</b> ${plainPassword}</p>
-       <p>Please login and change your password immediately.</p>`
+    // 👇 Mail template use here
+    const { subject, text, html } = companyActivationEmailTemplate(
+      company.name,
+      user.username,
+      plainPassword
     );
+
+    await sendEmail(company.email, subject, text, html);
 
     message = `Company added & activated successfully. Login details shared to ${company.email}`;
   }
@@ -299,22 +298,20 @@ export const activateCompany = asyncHandler(async (req, res) => {
         instituteName : company.name,
       });
 
-      await user.save();
-
+      
       // Mark first activation
       company.isActivatedOnce = true;
+      await user.save();
+      
+      // 👇 Mail template use here
+    const { subject, text, html } = companyActivationEmailTemplate(
+      company.name,
+      user.username,
+      plainPassword
+    );
 
-      // Send email only first time
-      await sendEmail(
-        company.email,
-        "Your Company Account Activated",
-        `Hello ${company.name},\nYour account is now active.\n\nUsername: ${user.username}\nPassword: ${plainPassword}\n\nLogin and change your password immediately.`,
-        `<h3>Hello ${company.name},</h3>
-         <p>Your account has been <b>activated</b>.</p>
-         <p><b>Username:</b> ${user.username}</p>
-         <p><b>Password:</b> ${plainPassword}</p>
-         <p>Please login and change your password immediately.</p>`
-      );
+    await sendEmail(company.email, subject, text, html);
+
 
       message = `Company activated successfully, login details shared to ${company.email}`;
     } else {
@@ -358,6 +355,7 @@ export const recentlyRegisteredCompanies = asyncHandler(async (req, res) => {
   });
 });
 
+// get company by user
 export const getCompanyByUser = asyncHandler(async (req, res) => {
   const userId = req.admin?._id;
   const user = await Admin.findById(userId);
