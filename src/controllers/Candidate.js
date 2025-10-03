@@ -136,7 +136,11 @@ export const getScheduledCandidates = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: "Admin not found" });
   }
   const companyId = admin.companyId;
-  const candidates = await Candidate.find({ companyId, status: "scheduled" });
+  // Candidate with job detail
+  const candidates = await Candidate.find({ companyId, status: "scheduled" }).populate({
+    path: "jobId",
+    select: "title package",
+  });
   if (!candidates || candidates.length === 0) {
     return res.status(404).json({ message: "No candidates found" });
   }

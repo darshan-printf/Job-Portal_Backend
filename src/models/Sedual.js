@@ -5,7 +5,8 @@ const scheduleSchema = new mongoose.Schema({
   companyId: { type: mongoose.Schema.Types.ObjectId, ref: "Company", required: true },
   candidateId: { type: mongoose.Schema.Types.ObjectId, ref: "Candidate", required: true },
   interviewDate: { type: Date, required: true },
-  status: { type: String, enum: ["scheduled", "completed", "cancelled"], default: "scheduled" },
+  remark: { type: String, default: "" },
+  status: { type: String, enum: ["scheduled", "completed", "cancelled" ,"rejected" ,"accepted"], default: "scheduled" },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
