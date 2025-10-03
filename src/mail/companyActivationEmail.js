@@ -1,6 +1,10 @@
 // emailTemplates/companyActivationEmail.js
 
-export const companyActivationEmailTemplate = (companyName, username, plainPassword) => {
+export const companyActivationEmailTemplate = (
+  companyName,
+  username,
+  plainPassword
+) => {
   const subject = "Your Company Account Activated";
 
   const text = `Hello ${companyName},
