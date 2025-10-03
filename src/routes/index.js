@@ -14,6 +14,7 @@ import feedback from "./Feedback.js";
 import teamRoute from "./Team.js";
 import allLocationRoute from "./AllLocation.js";
 import candidateRoute from "./Candidate.js";
+import scheduleRoute from "./Sedual.js";
 
 const rootRouter = Router();
 
@@ -32,6 +33,8 @@ rootRouter.use('/feedback',feedback);
 rootRouter.use('/team',teamRoute);
 rootRouter.use('/allLocation',allLocationRoute);
 rootRouter.use('/candidate',candidateRoute);
+rootRouter.use('/schedule',scheduleRoute);
+
 
 
 

@@ -9,6 +9,13 @@ export const addSchedule = asyncHandler(async (req, res) => {
   if (!admin) {
     return res.status(404).json({ message: "Admin not found" });
   }
+  // one schedule per candidate
+  if(candidateId){
+    const existingSchedule = await Schedule.findOne({ candidateId });
+    if (existingSchedule) {
+      return res.status(400).json({ message: "Schedule already exists for this candidate" });
+    }
+  }
   const companyId = admin.companyId;
   const schedule = await Schedule.create({
     companyId: companyId,
