@@ -71,7 +71,11 @@ export const getCandidateByCompanyId = asyncHandler(async (req, res) => {
 // get candidate by id
 export const getCandidateById = asyncHandler(async (req, res) => {
   const candidateId = req.params.id;
+
   const candidate = await Candidate.findById(candidateId);
+  const baseUrl = process.env.BASE_URL;
+  candidate.resume = candidate.resume ? `${baseUrl}/${candidate.resume}` : null;
+  
   if (!candidate) {
     return res.status(404).json({ message: "Candidate not found" });
   }

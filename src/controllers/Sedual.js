@@ -1,5 +1,5 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
-import Schedule from "../models/Sedual.js";
+import Schedule from "../models/Schedule.js";
 import Admin from "../models/Admin.js";
 
 // add schedule
