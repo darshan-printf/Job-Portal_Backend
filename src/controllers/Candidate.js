@@ -4,6 +4,7 @@ import Candidate from "../models/Candidate.js";
 import Admin from "../models/Admin.js";
 import { sendEmail } from "../utils/email.js";
 import { rejectionEmailTemplate } from "../mail/rejectionEmailTemplate.js";
+import Schedule from "../models/Schedule.js";
 
 
 
@@ -87,7 +88,7 @@ export const getCandidateById = asyncHandler(async (req, res) => {
 
 // change candidate status
 export const changeCandidateStatus = asyncHandler(async (req, res) => {
-  const { candidateId, status } = req.body; // 👈 id aur status dono body se
+  const { candidateId, status, remark, interviewDate } = req.body; 
 
   const candidate = await Candidate.findById(candidateId);
   if (!candidate) {
@@ -103,14 +104,29 @@ export const changeCandidateStatus = asyncHandler(async (req, res) => {
   candidate.status = status;
   await candidate.save();
 
- // Rejection case handle with template
+  // Rejection case
   if (status === "rejected") {
     const { subject, text, html } = rejectionEmailTemplate(candidate.name);
-
     try {
       await sendEmail(candidate.email, subject, text, html);
     } catch (error) {
       console.error("Error sending rejection email:", error);
+    }
+  }
+
+  // Schedule case
+  if (status === "scheduled") {
+    // check if already scheduled
+    const existingSchedule = await Schedule.findOne({ candidateId: candidate._id });
+    if (!existingSchedule) {
+      await Schedule.create({
+        companyId: candidate.companyId,
+        jobId: candidate.jobId,
+        candidateId: candidate._id,
+        interviewDate: interviewDate || null,
+        status: status,
+        remark: remark || "",
+      });
     }
   }
 
@@ -119,6 +135,7 @@ export const changeCandidateStatus = asyncHandler(async (req, res) => {
     candidate,
   });
 });
+
 
 //  get list of candidate status scheduled
 export const getScheduledCandidates = asyncHandler(async (req, res) => {
