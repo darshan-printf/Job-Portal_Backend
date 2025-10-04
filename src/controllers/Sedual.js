@@ -32,6 +32,25 @@ export const addSchedule = asyncHandler(async (req, res) => {
   });
 });
 
+// get schedule candidate all
+export const getScheduleById = asyncHandler(async (req, res) => {
+  const adminId = req.admin._id;
+  const admin = await Admin.findById(adminId);
+  if (!admin) {
+    return res.status(404).json({ message: "Admin not found" });
+  }
+  const companyId = admin.companyId;
+  const schedules = await Schedule.find({ companyId }).populate("jobId candidateId","title firstName lastName email");
+  if (!schedules) {
+    return res.status(404).json({ message: "Schedules not found" });
+  }
+  res.status(200).json({
+    message: "Schedules retrieved successfully",
+    schedules,
+  });
+  
+});
+
 
 
 
