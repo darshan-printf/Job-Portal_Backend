@@ -5,10 +5,9 @@ import { addSchedule, getScheduleById } from "../controllers/Sedual.js";
 
 const scheduleRoute = Router();
 
-// add schedule
 scheduleRoute.post("/add", protect, authorize("user"), addSchedule);
-// get schedule candidate all
 scheduleRoute.get("/get", protect, authorize("user"), getScheduleById);
+scheduleRoute.get("/get/:id", protect, authorize("user"), getScheduleById);
 
 
 export default scheduleRoute;
