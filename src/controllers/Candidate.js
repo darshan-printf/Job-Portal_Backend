@@ -124,7 +124,7 @@ export const changeCandidateStatus = asyncHandler(async (req, res) => {
         jobId: candidate.jobId,
         candidateId: candidate._id,
         interviewDate: interviewDate || null,
-        status: status,
+        status: "pending",
         remark: remark || "",
       });
     }
