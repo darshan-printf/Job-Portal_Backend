@@ -32,42 +32,50 @@ export const addSchedule = asyncHandler(async (req, res) => {
   });
 });
 
-// get schedule candidate all
-export const getScheduleById = asyncHandler(async (req, res) => {
+// get schedule 
+export const getSchedule = asyncHandler(async (req, res) => {
   const adminId = req.admin._id;
+
+  // ✅ Find Admin
   const admin = await Admin.findById(adminId);
   if (!admin) {
     return res.status(404).json({ message: "Admin not found" });
   }
+
   const companyId = admin.companyId;
-  const schedules = await Schedule.find({ companyId }).populate("jobId candidateId","title firstName lastName email");
-  if (!schedules) {
+
+  // ✅ Get all schedules with populated job and candidate
+  const schedules = await Schedule.find({ companyId })
+    .populate("jobId", "title package " )
+    .populate("candidateId", " email phone name");
+
+  if (!schedules || schedules.length === 0) {
     return res.status(404).json({ message: "Schedules not found" });
   }
+
+  // ✅ Flattened format
+  const formattedSchedules = schedules.map((schedule) => ({
+    _id: schedule._id,
+    jobId: schedule.jobId?._id,
+    jobTitle: schedule.jobId?.title,
+    candidateId: schedule.candidateId?._id,
+    package: schedule.jobId?.package,
+    candidateName: schedule.candidateId?.name,
+    candidateEmail: schedule.candidateId?.email,
+    candidatePhone: schedule.candidateId?.phone,
+    date: schedule.date,
+    time: schedule.time,
+    status: schedule.status,
+    note: schedule.note,
+    createdAt: schedule.createdAt,
+    updatedAt: schedule.updatedAt,
+  }));
+
   res.status(200).json({
     message: "Schedules retrieved successfully",
-    schedules,
+    schedules: formattedSchedules,
   });
-  
 });
 
-// get candidate by job id 
-export const getScheduleByJobId = asyncHandler(async (req, res) => {
-  const adminId = req.admin._id;
-  const admin = await Admin.findById(adminId);
-  if (!admin) {
-    return res.status(404).json({ message: "Admin not found" });
-  }
-  const jobId = req.params.jobId;
-  const schedules = await Schedule.find({ jobId }).populate("jobId candidateId","title firstName lastName email");
-  if (!schedules) {
-    return res.status(404).json({ message: "Schedules not found" });
-  }
-  res.status(200).json({
-    message: "Schedules retrieved successfully",
-    schedules,
-  });
-  
-});
 
 

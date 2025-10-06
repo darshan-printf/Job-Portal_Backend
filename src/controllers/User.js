@@ -4,6 +4,8 @@ import mongoose from "mongoose";
 import bcrypt from 'bcryptjs';
 import Company from "../models/Company.js";
 import imageToBase64 from "../utils/imageToBase64.js";
+import fs from "fs";
+import path from "path";
 
 // add user
 export const useAdd = asyncHandler(async (req, res) => {
@@ -95,65 +97,110 @@ export const getUserById = asyncHandler(async (req, res) => {
 
 // update user
 export const updateUser = asyncHandler(async (req, res) => {
-    const {
-        id,
-        firstName,
-        lastName,
-        username,
-        password,
-        email,
-        instituteName,
-        isActive
-    } = req.body;
+  const {
+    id,
+    firstName,
+    lastName,
+    username,
+    password,
+    email,
+    instituteName,
+    isActive,
+  } = req.body;
 
-    if (!id) {
-        return res.status(400).json({ message: "User ID is required" });
+  if (!id) {
+    return res.status(400).json({ message: "User ID is required" });
+  }
+
+  const user = await Admin.findById(id);
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  // Update basic fields
+  user.firstName = firstName || user.firstName;
+  user.lastName = lastName || user.lastName;
+  user.username = username || user.username;
+  user.email = email || user.email;
+  user.instituteName = instituteName || user.instituteName;
+
+  // Optional: Update password only if provided
+  if (password) {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    user.password = hashedPassword;
+  }
+
+  // 🧹 Handle image replacement (delete old -> add new)
+  const deleteOldFile = (filePath) => {
+    try {
+      if (filePath && fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    } catch (err) {
+      console.error("Error deleting old file:", err);
     }
+  };
 
-    const user = await Admin.findById(id);
-    if (!user) {
-        return res.status(404).json({ message: "User not found" });
-    }
+  // Profile Image
+  if (req.files?.profileImage?.[0]?.path) {
+    deleteOldFile(user.profileImage); // delete old
+    user.profileImage = req.files.profileImage[0].path; // save new
+  }
 
-    // Update basic fields
-    user.firstName = firstName || user.firstName;
-    user.lastName = lastName || user.lastName;
-    user.username = username || user.username;
-    user.email = email || user.email;
-    user.instituteName = instituteName || user.instituteName;
+  // Logo
+  if (req.files?.logo?.[0]?.path) {
+    deleteOldFile(user.logo); // delete old
+    user.logo = req.files.logo[0].path; // save new
+  }
 
-    // Optional: Update password only if provided
-    if (password) {
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-        user.password = hashedPassword;
-    }
+  // Optional: Update isActive
+  if (typeof isActive !== "undefined") {
+    user.isActive = isActive;
+  }
 
-    // Optional: Update profileImage and logo if uploaded
-    if (req.files?.profileImage?.[0]?.path) {
-        user.profileImage = req.files.profileImage[0].path;
-    }
-    if (req.files?.logo?.[0]?.path) {
-        user.logo = req.files.logo[0].path;
-    }
+  await user.save();
 
-    // Optional: Update isActive
-    if (typeof isActive !== "undefined") {
-        user.isActive = isActive;
-    }
-
-    await user.save();
-    res.json({ message: "User updated", user });
+  res.json({ message: "User updated successfully", user });
 });
 
 // delete user
 export const deleteUser = asyncHandler(async (req, res) => {
-    const { id } = req.params;
-    const user = await Admin.findByIdAndDelete(id);
-    if (!user) {
-        return res.status(404).json({ message: "User not found" });
+  const { id } = req.params;
+
+  // 1️⃣ Validate MongoDB ID
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ success: false, message: "Invalid User ID" });
+  }
+
+  // 2️⃣ Find the user first
+  const user = await Admin.findById(id);
+  if (!user) {
+    return res.status(404).json({ success: false, message: "User not found" });
+  }
+
+  // 3️⃣ Optional: Delete profile image if exists (if you store image path)
+  if (user.profileImage) {
+    try {
+      const imagePath = path.resolve(user.profileImage);
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath);
+        console.log("🗑️ Deleted user profile image:", imagePath);
+      }
+    } catch (err) {
+      console.error("⚠️ Error deleting user profile image:", err.message);
     }
-    res.json({ message: "User deleted", user });
+  }
+
+  // 4️⃣ Delete user from DB
+  await Admin.findByIdAndDelete(id);
+
+  // 5️⃣ Respond
+  res.status(200).json({
+    success: true,
+    message: "User deleted successfully",
+    data: user,
+  });
 });
 
 // user Active & Deactive

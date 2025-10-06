@@ -87,20 +87,33 @@ export const updateCountry = asyncHandler(async (req, res) => {
 
 // Delete a country by ID
 export const deleteCountry = asyncHandler(async (req, res) => {
-    const country = await Country.findById(req.params.id);
-    if (!country) {
-        return res.status(404).json({ message: "Country not found" });
+  const country = await Country.findById(req.params.id);
+  if (!country) {
+    return res.status(404).json({ message: "Country not found" });
+  }
+
+  // Check if any states reference this country
+  const relatedStates = await State.find({ country: req.params.id });
+  if (relatedStates.length > 0) {
+    return res
+      .status(400)
+      .json({
+        message:
+          "Cannot delete country with related states. Delete related states first.",
+      });
+  }
+
+  // 🧹 Delete flag/logo image if exists
+  if (country.flag && fs.existsSync(country.flag)) {
+    try {
+      fs.unlinkSync(country.flag);
+    } catch (err) {
+      console.error("Error deleting country flag:", err);
     }
-    // Check if any states reference this country
-    const relatedStates = await State.find({ country: req.params.id });
+  }
 
+  // Delete the country
+  await Country.findByIdAndDelete(req.params.id);
 
-    if (relatedStates.length > 0) {
-        return res.status(400).json({ message: "Cannot delete country with related states. Delete related states first." });
-    }
-
-    // Delete the country
-    await Country.findByIdAndDelete(req.params.id);
-
-    res.json({ message: "Country deleted successfully" });
+  res.json({ message: "Country deleted successfully" });
 });

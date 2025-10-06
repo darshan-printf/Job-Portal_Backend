@@ -83,11 +83,37 @@ export const updateTeam = asyncHandler(async (req, res) => {
 });
 
 // delete team by id
+const deleteFileIfExists = (filePath) => {
+  try {
+    if (filePath && fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+      console.log("🗑️ Deleted file:", filePath);
+    }
+  } catch (err) {
+    console.error("⚠️ Error deleting file:", err);
+  }
+};
+
+// 🧩 Delete team by ID
 export const deleteTeam = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const team = await Team.findByIdAndDelete(id);
+
+  // First find the team (we need the image path before deleting)
+  const team = await Team.findById(id);
   if (!team) {
     return res.status(404).json({ message: "Team not found" });
   }
-  res.json({ message: "Team deleted successfully", team });
+
+  // 🧹 Delete the stored image if it exists
+  if (team.image) {
+    deleteFileIfExists(team.image);
+  }
+
+  // 🗑️ Delete the team from DB
+  await Team.findByIdAndDelete(id);
+
+  res.json({
+    message: "Team deleted successfully",
+    team,
+  });
 });

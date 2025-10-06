@@ -75,6 +75,7 @@ export const registerCompany = asyncHandler(async (req, res) => {
       "Company registered successfully please wait 24 hours for approval",
   });
 });
+
 // Get All Companies
 export const getAllCompanies = asyncHandler(async (req, res) => {
   const companies = await Company.find();
@@ -222,11 +223,12 @@ export const updateCompany = asyncHandler(async (req, res) => {
     message: "Company updated successfully",
   });
 });
+
 // Delete Company
 export const deleteCompany = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
-  // Check if id is valid MongoDB ObjectId
+  // 1️⃣ Validate ID
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(400).json({
       success: false,
@@ -234,7 +236,7 @@ export const deleteCompany = asyncHandler(async (req, res) => {
     });
   }
 
-  // Check if company exists
+  // 2️⃣ Check if company exists
   const company = await Company.findById(id);
   if (!company) {
     return res.status(404).json({
@@ -243,7 +245,7 @@ export const deleteCompany = asyncHandler(async (req, res) => {
     });
   }
 
-  // Check if any Admin is linked with this company
+  // 3️⃣ Check if any Admin is linked with this company
   const adminExists = await Admin.findOne({ companyId: id });
   if (adminExists) {
     return res.status(400).json({
@@ -253,12 +255,25 @@ export const deleteCompany = asyncHandler(async (req, res) => {
     });
   }
 
-  // If no admin linked → delete company
-  await Company.findByIdAndDelete(id);
+  // 4️⃣ Delete company logo if exists
+  if (company.logo) {
+    try {
+      // if path stored from multer looks like: uploads/company/logo.png
+      const logoPath = path.resolve(company.logo);
 
+      if (fs.existsSync(logoPath)) {
+        fs.unlinkSync(logoPath); // delete the file
+        console.log("🗑️ Company logo deleted:", logoPath);
+      }
+    } catch (error) {
+      console.error("⚠️ Error deleting company logo:", error.message);
+    }
+  }
+  // 5️⃣ Delete company from DB
+  await Company.findByIdAndDelete(id);
   res.status(200).json({
     success: true,
-    message: "Company deleted successfully",
+    message: "Company deleted successfully (including logo file)",
   });
 });
 
@@ -388,7 +403,7 @@ export const getCompanyByUser = asyncHandler(async (req, res) => {
   });
 });
 
-// get all companies
+// get all companies for public web site 
 export const getAllCompaniesPublic = asyncHandler(async (req, res) => {
   const companies = await Company.find();
   const companiesWithBase64Logo = companies.map((company) => {
