@@ -15,3 +15,4 @@ export const interviewScheduledEmailTemplate = (
 
   return { subject, text, html };
 };
+

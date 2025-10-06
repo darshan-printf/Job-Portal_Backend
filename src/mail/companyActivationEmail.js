@@ -26,3 +26,5 @@ Please login and change your password immediately.`;
 
   return { subject, text, html };
 };
+
+  

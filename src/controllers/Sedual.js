@@ -3,6 +3,8 @@ import Schedule from "../models/Schedule.js";
 import Admin from "../models/Admin.js";
 import { sendEmail } from "../utils/email.js";
 import { interviewScheduledEmailTemplate } from "../mail/InterviewScheduledEmail.js";
+import { interviewCancelledEmailTemplate } from "../mail/InterviewCancelledEmail.js";
+import { interviewRejectedEmailTemplate } from "../mail/InterviewRejectedEmail.js";
 
 // update schedule
 export const updateSchedule = asyncHandler(async (req, res) => {
@@ -27,6 +29,36 @@ export const updateSchedule = asyncHandler(async (req, res) => {
       await sendEmail(schedule.candidateId.email, subject, text, html);
     } catch (error) {
       console.error("Error sending interview scheduled email:", error);
+    }
+  }
+
+  // If  status is "cancelled" , send email to candidate
+  if (status === "cancelled" && schedule.candidateId?.email) {
+    const { subject, text, html } = interviewCancelledEmailTemplate(
+      schedule.candidateId.name,
+      interviewDate,
+      remark
+    );
+
+    try {
+      await sendEmail(schedule.candidateId.email, subject, text, html);
+    } catch (error) {
+      console.error("Error sending interview cancelled email:", error);
+    }
+  }
+
+  // If status is "rejected" , send email to candidate
+  if (status === "rejected" && schedule.candidateId?.email) {
+    const { subject, text, html } = interviewRejectedEmailTemplate(
+      schedule.candidateId.name,
+      interviewDate,
+      remark
+    );
+
+    try {
+      await sendEmail(schedule.candidateId.email, subject, text, html);
+    } catch (error) {
+      console.error("Error sending interview rejected email:", error);
     }
   }
 
