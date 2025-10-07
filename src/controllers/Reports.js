@@ -5,6 +5,8 @@ import City from "../models/City.js";
 import Admin from "../models/Admin.js";
 import Job from "../models/Job.js";
 import Company from "../models/Company.js";
+import Candidate from "../models/Candidate.js";
+import Schedule from "../models/Schedule.js";
 
 // get total counts
 export const getTotalCounts = asyncHandler(async (req, res) => {
@@ -25,3 +27,28 @@ export const getTotalCounts = asyncHandler(async (req, res) => {
 
     });
 });
+
+//  get total count for AdminDashboard
+export const getTotalCountsForAdminDashboard = asyncHandler(async (req, res) => {
+    const adminId = req.admin._id;
+    const admin = await Admin.findById(adminId);
+    if (!admin) {
+        return res.status(404).json({ message: "Admin not found" });
+    }
+    const companyId = admin.companyId;
+    const totalJobs = await Job.countDocuments({ companyId });
+    const totalCandidates = await Candidate.countDocuments({ companyId });
+    const totalPendingCandidates = await Schedule.countDocuments({ companyId, status: "scheduled" });
+    const totalCompletedCandidates = await Schedule.countDocuments({ companyId, status: "accepted" });
+
+    
+    
+    res.json({
+        totalJobs,
+        totalCandidates,
+        totalPendingCandidates,
+        totalCompletedCandidates,
+    });
+});
+
+
