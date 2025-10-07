@@ -334,7 +334,7 @@ export const activateCompany = asyncHandler(async (req, res) => {
         { email: company.email },
         { isActive: true }
       );
-      message = `Company re-activated successfully (no new email sent)`;
+      message = `Company re-activated successfully `;
     }
   } else {
     // Deactivation
