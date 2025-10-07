@@ -5,6 +5,7 @@ import { sendEmail } from "../utils/email.js";
 import { interviewScheduledEmailTemplate } from "../mail/InterviewScheduledEmail.js";
 import { interviewCancelledEmailTemplate } from "../mail/InterviewCancelledEmail.js";
 import { interviewRejectedEmailTemplate } from "../mail/InterviewRejectedEmail.js";
+import { offerLetterEmailTemplate } from "../mail/offerLetterEmail.js";
 
 // update schedule
 export const updateSchedule = asyncHandler(async (req, res) => {
@@ -61,6 +62,7 @@ export const updateSchedule = asyncHandler(async (req, res) => {
       console.error("Error sending interview rejected email:", error);
     }
   }
+
 
   // ✅ Update fields
   if (interviewDate) schedule.interviewDate = interviewDate;
@@ -123,5 +125,97 @@ export const getSchedule = asyncHandler(async (req, res) => {
   });
 });
 
+// get schedule by job id and get only accepted schedules
+export const getScheduleById = asyncHandler(async (req, res) => {
+  const jobId = req.params.id;
+  // ✅ Find schedule and populate candidate info
+  const schedule = await Schedule.find({jobId,status: { $in: ["accepted", "offered"] }}).populate("candidateId");
+  if (!schedule) {
+    return res.status(404).json({ message: "Schedule not found" });
+  }
+  
+  // ✅ Flattened format
+  const formattedSchedules = schedule.map((schedule) => ({
+    _id: schedule._id,
+    jobId: schedule.jobId?._id,
+    candidateId: schedule.candidateId?._id,
+    candidateName: schedule.candidateId?.name,
+    candidateEmail: schedule.candidateId?.email,
+    candidatePhone: schedule.candidateId?.phone,
+    interviewDate: schedule.interviewDate,
+    date: schedule.date,
+    time: schedule.time,
+    status: schedule.status,
+    note: schedule.note,
+    createdAt: schedule.createdAt,
+    remark: schedule.remark,
+    updatedAt: schedule.updatedAt,
+  }));  
+  
+  res.status(200).json({
+    message: "Schedules retrieved successfully",
+    schedules: formattedSchedules,
+  });
+})
+  
+// send mail offer letter to candidate
+export const sendOfferLetter = asyncHandler(async (req, res) => {
+  const scheduleId = req.params.id;
+
+  // ✅ Find schedule & populate related data
+  const schedule = await Schedule.findById(scheduleId)
+    .populate("candidateId")
+    .populate("jobId")
+    .populate("companyId");
+
+  if (!schedule) {
+    return res.status(404).json({ message: "Schedule not found" });
+  }
+
+  // ✅ Extract details
+  const candidate = schedule.candidateId;
+  const job = schedule.jobId;
+  const company = schedule.companyId;
+
+  const candidateName = candidate.name;
+  const candidateEmail = candidate.email;
+  const interviewDate = schedule.interviewDate;
+  const remark = schedule.remark;
+  const jobTitle = job.title;
+  const jobField = job.field;
+  const salary = job.salary;
+  const companyName = company?.name || "Our Company";
+
+  // ✅ Prepare email content
+  const { subject, text, html } = offerLetterEmailTemplate({
+    candidateName,
+    jobTitle,
+    jobField,
+    salary,
+    interviewDate,
+    remark,
+    companyName,
+  });
+
+  // ✅ Send email
+  try {
+    await sendEmail(candidateEmail, subject, text, html);
+
+    // ✅ Update schedule status to 'offered'
+    schedule.status = "offered";
+    await schedule.save();
+
+    res.status(200).json({
+      message: "Offer letter email sent successfully",
+      candidateId: candidate._id, // return only candidate id as per your need
+    });
+  } catch (error) {
+    console.error("Error sending offer letter email:", error);
+    res.status(500).json({ message: "Error sending offer letter email" });
+  }
+});
 
 
+
+
+ 
