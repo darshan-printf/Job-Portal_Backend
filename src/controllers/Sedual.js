@@ -108,11 +108,13 @@ export const getSchedule = asyncHandler(async (req, res) => {
     candidateName: schedule.candidateId?.name,
     candidateEmail: schedule.candidateId?.email,
     candidatePhone: schedule.candidateId?.phone,
+    interviewDate: schedule.interviewDate,
     date: schedule.date,
     time: schedule.time,
     status: schedule.status,
     note: schedule.note,
     createdAt: schedule.createdAt,
+    remark: schedule.remark,
     updatedAt: schedule.updatedAt,
   }));
 
