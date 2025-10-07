@@ -39,9 +39,10 @@ export const getTotalCountsForAdminDashboard = asyncHandler(async (req, res) => 
     const totalJobs = await Job.countDocuments({ companyId });
     const totalCandidates = await Candidate.countDocuments({ companyId });
     const totalPendingCandidates = await Schedule.countDocuments({ companyId, status: "scheduled" });
-    const totalCompletedCandidates = await Schedule.countDocuments({ companyId, status: "accepted" });
+    const totalCompletedCandidates = await Schedule.countDocuments({ companyId, status: { $in: ["accepted", "offered"] } });
 
-    
+
+
     
     res.json({
         totalJobs,
