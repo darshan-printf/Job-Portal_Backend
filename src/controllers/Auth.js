@@ -27,6 +27,7 @@ export const register = asyncHandler(async (req, res) => {
     await newAdmin.save();
     res.status(201).json({ message: 'Admin created', admin: newAdmin });
 });
+
 // login api
 export const login = asyncHandler(async (req, res) => {
     const { username, password } = req.body;

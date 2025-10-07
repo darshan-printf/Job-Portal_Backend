@@ -18,6 +18,7 @@ export const createState = asyncHandler(async (req, res) => {
     });
 
 });
+
 // get all states
 export const getAllStates = asyncHandler(async (req, res) => {
   const states = await State.find({}).populate("country", "flag"); 

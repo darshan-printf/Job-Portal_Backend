@@ -9,7 +9,6 @@ import Admin from "../models/Admin.js";
 import imageToBase64 from "../utils/imageToBase64.js";
 import { companyActivationEmailTemplate } from "../mail/companyActivationEmail.js";
 
-
 // Utility function to generate a random password
 function generatePassword(length = 6) {
   let chars = "0123456789";

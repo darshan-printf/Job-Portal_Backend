@@ -76,7 +76,6 @@ export const updateSchedule = asyncHandler(async (req, res) => {
   });
 });
 
-
 // get schedule 
 export const getSchedule = asyncHandler(async (req, res) => {
   const adminId = req.admin._id;

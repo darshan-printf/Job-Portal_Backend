@@ -3,7 +3,6 @@ import City from "../models/City.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import imageToBase64 from "../utils/imageToBase64.js";
 
-
 // carte  new state
 export const createCity = asyncHandler(async (req, res) => {
     const { name, code, stateId } = req.body;

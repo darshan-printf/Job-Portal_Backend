@@ -1,10 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
-import mongoose from "mongoose";
 import Job from "../models/Job.js";
 import Admin from "../models/Admin.js";
 import imageToBase64 from "../utils/imageToBase64.js";
-
-
 
 // Add job Admin
 export const addJobAdmin = asyncHandler(async (req, res) => {

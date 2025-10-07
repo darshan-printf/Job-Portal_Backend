@@ -6,8 +6,6 @@ import { sendEmail } from "../utils/email.js";
 import { rejectionEmailTemplate } from "../mail/rejectionEmailTemplate.js";
 import Schedule from "../models/Schedule.js";
 
-
-
 // apply job
 export const applyJob = asyncHandler(async (req, res) => {
   const { name, email, phone, jobId, resume, companyId } = req.body;
@@ -135,7 +133,6 @@ export const changeCandidateStatus = asyncHandler(async (req, res) => {
     candidate,
   });
 });
-
 
 //  get list of candidate status scheduled
 export const getScheduledCandidates = asyncHandler(async (req, res) => {

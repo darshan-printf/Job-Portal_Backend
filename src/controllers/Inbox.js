@@ -2,8 +2,6 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import mongoose from "mongoose";
 import Inbox from "../models/Inbox.js";
 
-
-
 // add inbox
 export const addInbox = asyncHandler(async (req, res) => {
     const { name, email, message,subject } = req.body;
