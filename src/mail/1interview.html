@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 650px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 50px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        .logo img{
+            width: 90%;
+            height: 90%;
+            object-fit: contain;
+            
+        }
+        
+        .header h1 {
+            margin: 0;
+            color: #ffffff;
+            font-size: 32px;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header p {
+            margin: 12px 0 0 0;
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 16px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .content {
+            padding: 50px 40px;
+        }
+        
+        .greeting {
+            font-size: 18px;
+            color: #1a1a1a;
+            margin: 0 0 15px 0;
+            font-weight: 600;
+        }
+        
+        .intro-text {
+            color: #666666;
+            font-size: 15px;
+            line-height: 1.7;
+            margin: 0 0 35px 0;
+        }
+        
+        .interview-card {
+            background: linear-gradient(135deg, #f6f9fc 0%, #e9f2f9 100%);
+            border-radius: 16px;
+            padding: 35px;
+            margin-bottom: 35px;
+            border: 2px solid #e1ecf7;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .interview-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .detail-item {
+            margin-bottom: 25px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .detail-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .detail-icon {
+            font-size: 24px;
+            margin-right: 15px;
+            min-width: 30px;
+        }
+        
+        .detail-content {
+            flex: 1;
+        }
+        
+        .detail-label {
+            color: #667eea;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        
+        .detail-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            line-height: 1.5;
+        }
+        
+        .date-time-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .date-time-card {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #e1ecf7;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .date-time-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .date-time-label {
+            color: #667eea;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        
+        .date-time-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+        
+        
+        
+        .preparation-tips {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-left: 5px solid #22c55e;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 35px 0;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.1);
+        }
+        
+        .tips-title {
+            display: flex;
+            align-items: center;
+            color: #166534;
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        
+        .tips-icon {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+        
+        .tips-list {
+            margin: 0;
+            padding-left: 20px;
+            color: #166534;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+        
+        .tips-list li {
+            margin-bottom: 8px;
+        }
+        
+        .important-notice {
+            background: linear-gradient(135deg, #fff9e6 0%, #ffedd5 100%);
+            border-left: 5px solid #f59e0b;
+            padding: 20px 25px;
+            border-radius: 12px;
+            margin: 35px 0;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.1);
+        }
+        
+        .notice-title {
+            display: flex;
+            align-items: center;
+            color: #92400e;
+            font-weight: 700;
+            font-size: 15px;
+            margin-bottom: 8px;
+        }
+        
+        .notice-icon {
+            font-size: 20px;
+            margin-right: 10px;
+        }
+        
+        .important-notice p {
+            margin: 0;
+            color: #78350f;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .contact-card {
+            background: #f8fafc;
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            margin: 35px 0;
+        }
+        
+        .contact-title {
+            color: #1a1a1a;
+            font-weight: 700;
+            font-size: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .contact-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #64748b;
+        }
+        
+        .contact-info:last-child {
+            margin-bottom: 0;
+        }
+        
+        .contact-info span {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        
+        .divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent 0%, #e2e8f0 50%, transparent 100%);
+            margin: 35px 0;
+        }
+        
+        .closing {
+            color: #64748b;
+            font-size: 15px;
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+        
+        .signature {
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+        .social-icons {
+            margin-top: 25px;
+        }
+        
+        .social-icons a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            margin: 0 8px;
+            line-height: 40px;
+            text-decoration: none;
+            font-size: 18px;
+            transition: background 0.3s ease;
+        }
+        
+        .social-icons a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .footer {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .footer-text {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            line-height: 1.6;
+            margin: 0 0 15px 0;
+        }
+        
+        .footer-links {
+            margin: 20px 0 0 0;
+        }
+        
+        .footer-links a {
+            color: #a5b4fc;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: #ffffff;
+        }
+        
+        @media only screen and (max-width: 600px) {
+            .container {
+                border-radius: 0;
+            }
+            .content {
+                padding: 30px 25px;
+            }
+            .header {
+                padding: 40px 25px;
+            }
+            .date-time-row {
+                grid-template-columns: 1fr;
+            }
+            .footer {
+                padding: 30px 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🚀</div>
+            <h1>Interview Scheduled!</h1>
+            <p>We're excited to meet you</p>
+        </div>
+        
+        <!-- Content -->
+        <div class="content">
+            <p class="greeting">Dear <strong>[Candidate Name]</strong>,</p>
+            
+            <p class="intro-text">
+                Congratulations! We're impressed with your application and would like to invite you for an interview. We're looking forward to learning more about your experience and discussing how you can contribute to our team.
+            </p>
+            
+            <!-- Interview Details Card -->
+            <div class="interview-card">
+                <!-- Date & Time Row -->
+                <div class="date-time-row">
+                    <div class="date-time-card">
+                        <div class="date-time-icon">📅</div>
+                        <div class="date-time-label">Date</div>
+                        <div class="date-time-value">[Monday, Jan 15, 2025]</div>
+                    </div>
+                    <div class="date-time-card">
+                        <div class="date-time-icon">🕐</div>
+                        <div class="date-time-label">Time</div>
+                        <div class="date-time-value">[10:00 AM IST]</div>
+                    </div>
+                </div>
+                
+                <!-- Position -->
+                <div class="detail-item">
+                    <div class="detail-icon">💼</div>
+                    <div class="detail-content">
+                        <div class="detail-label">Position</div>
+                        <div class="detail-value">[Senior Software Engineer]</div>
+                    </div>
+                </div>
+                
+                <!-- Location/Link -->
+                <div class="detail-item">
+                    <div class="detail-icon">📍</div>
+                    <div class="detail-content">
+                        <div class="detail-label">Location / Meeting Link</div>
+                        <div class="detail-value">[Office Address / Zoom Link]</div>
+                    </div>
+                </div>
+                
+                <!-- Duration -->
+                <div class="detail-item">
+                    <div class="detail-icon">⏱️</div>
+                    <div class="detail-content">
+                        <div class="detail-label">Duration</div>
+                        <div class="detail-value">[45-60 minutes]</div>
+                    </div>
+                </div>
+                
+                
+            </div>
+            <!-- Preparation Tips -->
+            <div class="preparation-tips">
+                <div class="tips-title">
+                    <span class="tips-icon">💡</span>
+                    Preparation Tips
+                </div>
+                <ul class="tips-list">
+                    <li>Review your resume and be ready to discuss your experience</li>
+                    <li>Research our company and understand what we do</li>
+                    <li>Prepare questions you'd like to ask us</li>
+                    <li>Test your internet connection and video/audio setup (if online)</li>
+                    <li>Dress professionally and arrive 5-10 minutes early</li>
+                </ul>
+            </div>
+            
+            <!-- Important Notice -->
+            <div class="important-notice">
+                <div class="notice-title">
+                    <span class="notice-icon">⚠️</span>
+                    Important Information
+                </div>
+                <p>
+                    Please bring a valid ID proof and copies of your certificates. If you need to reschedule or have any concerns, please contact us at least 24 hours in advance.
+                </p>
+            </div>
+            
+            <!-- Contact Information -->
+            <div class="contact-card">
+                <div class="contact-title">Contact Information</div>
+                <div class="contact-info">
+                    <span>📧</span>
+                    <div><strong>Email:</strong> [hr@company.com]</div>
+                </div>
+                <div class="contact-info">
+                    <span>📞</span>
+                    <div><strong>Phone:</strong> [+91 XXXXX XXXXX]</div>
+                </div>
+                <div class="contact-info">
+                    <span>💬</span>
+                    <div><strong>WhatsApp:</strong> [+91 XXXXX XXXXX]</div>
+                </div>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <p class="closing">
+                We're excited about the possibility of you joining our team! If you have any questions or need to reschedule, please don't hesitate to reach out.
+            </p>
+            
+            <p class="signature">
+                Best wishes,<br>
+                <strong>[HR Manager Name]</strong><br>
+                Human Resources Team<br>
+                <strong>[Company Name]</strong>
+            </p>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p class="footer-text">
+                This email was sent to you because an automated interview scheduling email.<br>
+                Please reply to this email if you have any questions.
+            </p>
+            
+            
+            <div class="social-icons">
+                <a href="[FACEBOOK_URL]">📘</a>
+                <a href="[TWITTER_URL]">🐦</a>
+                <a href="[LINKEDIN_URL]">💼</a>
+                <a href="[INSTAGRAM_URL]">📷</a>
+               
+            </div>
+            
+            <p class="footer-text" style="margin-top: 25px;">
+                © 2025 <strong>[Company Name]</strong>. All rights reserved.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
