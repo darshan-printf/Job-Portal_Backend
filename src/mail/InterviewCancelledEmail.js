@@ -1,3 +1,6 @@
+import moment from "moment";
+const Env = process.env
+
 const interviewCancelledEmailTemplate = (name, interviewDate, remark) => {
   const subject = `Interview Cancelled on ${interviewDate}`;
   const text = `Hello ${name}`;

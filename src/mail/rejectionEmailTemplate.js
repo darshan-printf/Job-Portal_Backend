@@ -1,4 +1,5 @@
-// emailTemplates/rejectionEmail.js
+import moment from "moment";
+const Env = process.env
 
 export const rejectionEmailTemplate = (candidateName) => {
   const subject = "Application Status - Rejected";

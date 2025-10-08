@@ -1,3 +1,5 @@
+import moment from "moment";
+const Env = process.env
 export const interviewScheduledEmailTemplate = (
   candidateName,
   interviewDate,

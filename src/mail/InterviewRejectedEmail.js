@@ -1,3 +1,6 @@
+import moment from "moment";
+const Env = process.env
+
 const interviewRejectedEmailTemplate = (
   candidateName,
   interviewDate,
