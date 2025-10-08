@@ -2,16 +2,9 @@
 
 export const companyActivationEmailTemplate = ( companyName, username, plainPassword) => {
 
-  const subject = "Your Company Account Activated";
+  const subject = `Your Company ${companyName} Account Activated`;
 
-  const text = `Hello ${companyName} ,
-
-Your account is now active.
-
-Username: ${username}
-Password: ${plainPassword}
-
-Please login and change your password immediately.`;
+  const text = `Hello ${companyName} ,Your account is now active.`;
 
   const html = `
     <h3>Hello ${companyName},</h3>

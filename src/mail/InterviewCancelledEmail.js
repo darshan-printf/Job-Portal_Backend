@@ -1,6 +1,6 @@
 const interviewCancelledEmailTemplate = (name, interviewDate, remark) => {
-  const subject = "Interview Cancelled";
-  const text = `Hello ${name},\n\nYour interview on ${interviewDate} has been cancelled.${remark ? `\nReason: ${remark}` : ""}\n\nRegards,\nHMS Team`;
+  const subject = `Interview Cancelled on ${interviewDate}`;
+  const text = `Hello ${name}`;
   const html = `
     <p>Hello ${name},</p>
     <p>Your interview on ${interviewDate} has been cancelled.${remark ? `<br>Reason: ${remark}` : ""}</p>

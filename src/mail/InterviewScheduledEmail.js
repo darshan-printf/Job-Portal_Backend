@@ -5,8 +5,7 @@ export const interviewScheduledEmailTemplate = (
 ) => {
   const subject = "Interview Scheduled";
 
-  const text = `Hello ${candidateName},
-  Your interview is scheduled on ${interviewDate} and remark is ${remark}.`;
+  const text = `Hello ${candidateName},`;
 
   const html = `
     <h3>Hello ${candidateName},</h3>

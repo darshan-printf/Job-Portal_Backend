@@ -3,11 +3,8 @@ const interviewRejectedEmailTemplate = (
   interviewDate,
   remark
 ) => {
-  const subject = "Interview Rejected";
-
-  const text = `Hello ${candidateName},
-  Your interview on ${interviewDate} has been rejected.${remark ? `\nReason: ${remark}` : ""}`;
-
+  const subject = `Interview Rejected on ${interviewDate}`;
+  const text = `Hello ${candidateName},`;
   const html = `
     <h3>Hello ${candidateName},</h3>
     <p>Your interview on <b>${interviewDate}</b> has been rejected.${remark ? `<br>Reason: ${remark}` : ""}</p>
