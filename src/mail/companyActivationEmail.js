@@ -4,15 +4,15 @@ const currentDate = moment().format("dddd, MMM DD, YYYY");
 const currentTime = moment().format("hh:mm A");
 
 export const companyActivationEmailTemplate = (
-  companyName,
-  username,
-  plainPassword
+    companyName,
+    username,
+    plainPassword
 ) => {
-  const subject = `Your Company ${companyName} Account Activated`;
+    const subject = `Your Company ${companyName} Account Activated`;
 
-  const text = `Hello ${companyName} ,Your account is now active.`;
+    const text = `Hello ${companyName} ,Your account is now active.`;
 
-  const html = `
+    const html = `
     <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -116,5 +116,5 @@ export const companyActivationEmailTemplate = (
 </html>
   `;
 
-  return { subject, text, html };
+    return { subject, text, html };
 };

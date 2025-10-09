@@ -1,6 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import City from "../models/City.js";
 import imageToBase64 from "../utils/imageToBase64.js";
+import State from "../models/States.js";
 
 export const getAllCountriesStatesCities = asyncHandler(async (req, res) => {
   const cities = await City.find({}, "name")
@@ -23,33 +24,45 @@ export const getAllCountriesStatesCities = asyncHandler(async (req, res) => {
   res.json(formatted);
 });
 
+// 👇 Helper function to generate code like GJ14244 or RJ745856
+const generateCode = (name) => {
+  const short = name.trim().substring(0, 2).toUpperCase(); // First 2 letters
+  const randomNum = Math.floor(10000 + Math.random() * 90000); // Random 5 digit number
+  return `${short}${randomNum}`;
+};
+
 // Add One Country and Country States and Cities multiple add
 export const addCountryStatesCities = asyncHandler(async (req, res) => {
-  const { country, states } = req.body;
+  const { countryId, states } = req.body;
 
-  // Create the country
-  const newCountry = await Country.create({
-    name: country.name,
-    code: country.code,
-    flag: country.flag,
-  });
+  if (!countryId) {
+    return res.status(400).json({ message: "Country ID is required" });
+  }
 
-  // Create states and cities
   for (const state of states) {
+    // ✅ Generate code for state
+    const stateCode = generateCode(state.name);
+
+    // Create State
     const newState = await State.create({
       name: state.name,
-      code: state.code,
-      country: newCountry._id,
+      code: stateCode,
+      country: countryId,
     });
 
     for (const city of state.cities) {
+      // ✅ Generate code for city
+      const cityCode = generateCode(city);
+
       await City.create({
         name: city,
-        code: city.replace(/\s+/g, "").toUpperCase(),
+        code: cityCode,
         state: newState._id,
+        country: countryId,
       });
     }
   }
 
-  res.status(201).json({ message: "Country, states, and cities added successfully" });
+  res.status(201).json({ message: "States and cities added successfully" });
 });
+
