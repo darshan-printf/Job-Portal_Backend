@@ -129,7 +129,6 @@ export const addCompany = asyncHandler(async (req, res) => {
 
   // get logo path
   const logo = req.files?.logo?.[0]?.path || "";
-
   // 1️⃣ Create company
   const company = await Company.create({
     name,
@@ -145,17 +144,14 @@ export const addCompany = asyncHandler(async (req, res) => {
     isActivatedOnce: false,
     CINNumber,
   });
-
   let message = "Company added successfully";
-
   // 2️⃣ If company should be active immediately -> create admin & send email
   if (isActive) {
     const plainPassword = generatePassword();
     const hashedPassword = await bcrypt.hash(plainPassword, 10);
-
     // Create admin for this company
     const user = await Admin.create({
-      username: company.name.replace(/\s+/g, "") + "@1711",
+      username: company.name.replace(/\s+/g, "") + `@${plainPassword}`,
         email: company.email,
         password: hashedPassword,
         role: "user",
@@ -165,27 +161,22 @@ export const addCompany = asyncHandler(async (req, res) => {
         lastName : company.name,
         instituteName : company.name,
     });
-
     // Mark first activation
     company.isActivatedOnce = true;
     await company.save();
-
     // 👇 Mail template use here
     const { subject, text, html } = companyActivationEmailTemplate(
       company.name,
       user.username,
       plainPassword
     );
-
     await sendEmail(company.email, subject, text, html);
-
-    message = `Company added & activated successfully. Login details shared to ${company.email}`;
+    message = `Company added successfully and Login details shared to Company Email`;
   }
 
   res.status(201).json({
     success: true,
     message,
-    data: company,
   });
 });
 
@@ -301,7 +292,7 @@ export const activateCompany = asyncHandler(async (req, res) => {
 
       // Create Admin for this company
       let user = new Admin({
-        username: company.name.replace(/\s+/g, "") + "@1711",
+        username: company.name.replace(/\s+/g, "") + `@${plainPassword}`,
         email: company.email,
         password: hashedPassword,
         role: "user",
@@ -327,7 +318,7 @@ export const activateCompany = asyncHandler(async (req, res) => {
     await sendEmail(company.email, subject, text, html);
 
 
-      message = `Company activated successfully, login details shared to ${company.email}`;
+      message = `Company activated successfully, login details shared to Company Email`;
     } else {
       // 🔹 Reactivation logic (no new user, no email)
       await Admin.findOneAndUpdate(

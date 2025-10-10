@@ -16,14 +16,6 @@ Regards,
 HR Team`;
 
   const html = `
-    <p>Dear <b>${candidateName}</b>,</p>
-    <p>We have reviewed your profile but unfortunately, you have not been shortlisted at this time.</p>
-    <p>We wish you the best for your future.</p>
-    <p>Regards,<br>HR Team</p>
-
-
-
-
     <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,7 +28,7 @@ HR Team`;
   <div class="container">
     <!-- Header -->
     <div class="header">
-      <div class="logo"><img src="https://cdn-icons-png.freepik.com/512/5968/5968374.png?uid=R165505067&ga=GA1.1.701570569.1719990316" alt="${PROJECT_NAME}" style="width: 60px; height: 60px; "></div>
+     
       <h1>Application Update</h1>
       <p>Profile Review Result</p>
     </div>

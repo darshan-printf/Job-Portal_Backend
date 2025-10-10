@@ -19,13 +19,6 @@ const interviewCancelledEmailTemplate = (name, interviewDate, remark) => {
     <div class="container">
       <!-- Header -->
       <div class="header">
-        <div class="logo">
-          <img
-            src="https://cdn-icons-png.freepik.com/512/5968/5968374.png?uid=R165505067&ga=GA1.1.701570569.1719990316"
-            alt="logo"
-            style="width: 60px; height: 60px"
-          />
-        </div>
         <h1>Interview Update</h1>
         <p>Important notice regarding your scheduled interview</p>
       </div>

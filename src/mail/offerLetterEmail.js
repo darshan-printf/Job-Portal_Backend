@@ -43,13 +43,7 @@ ${companyName} HR Team
     <div class="container">
       <!-- Header -->
       <div class="header">
-        <div class="logo">
-          <img
-            src="https://cdn-icons-png.freepik.com/512/5968/5968374.png?uid=R165505067&ga=GA1.1.701570569.1719990316"
-            alt="${PROJECT_NAME}"
-            style="width: 60px; height: 60px"
-          />
-        </div>
+       
         <h1>Congratulations!</h1>
         <p>You’ve Been Selected for the Position</p>
       </div>
