@@ -4,10 +4,8 @@ const currentDate = moment().format("dddd, MMM DD, YYYY");
 const currentTime = moment().format("hh:mm A");
 
 const interviewCancelledEmailTemplate = (name, interviewDate, remark) => {
-  const subject = `Interview Cancelled on ${interviewDate
-    .moment()
-    .format("dddd, MMM DD, YYYY hh:mm A")}  `;
-  const text = `Hello ${name}`;
+  const subject = `Interview Cancelled on ${interviewDate.moment().format("dddd, MMM DD, YYYY hh:mm A")}  `;
+  const text = `Hello ${name} , your interview has been cancelled`;
   const html = `
 <!DOCTYPE html>
 <html lang="en">
@@ -38,9 +36,7 @@ const interviewCancelledEmailTemplate = (name, interviewDate, remark) => {
           We hope you're doing well. We wanted to inform you that your upcoming interview 
            has been <strong>cancelled</strong> due
           to some unforeseen circumstances. We sincerely apologize for any
-          inconvenience this may cause. ${remark} ${interviewDate
-    .moment()
-    .format("dddd, MMM DD, YYYY hh:mm A")}
+          inconvenience this may cause. ${remark} ${interviewDate.moment().format("dddd, MMM DD, YYYY hh:mm A")}
         </p>
         <div class="notice-card">
           <h3>🚫 Interview Cancelled</h3>
@@ -63,7 +59,6 @@ const interviewCancelledEmailTemplate = (name, interviewDate, remark) => {
           to you once your new schedule is confirmed.
         </p>
         <p class="signature">
-           Best wishes,
                 Best regards,<br>
                 The <strong>${Env.PROJECT_NAME}</strong> Team<br>
                 ${currentDate} <br>

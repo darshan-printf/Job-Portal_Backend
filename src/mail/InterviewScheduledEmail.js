@@ -13,12 +13,6 @@ export const interviewScheduledEmailTemplate = (
   const text = `Hello ${candidateName},`;
 
   const html = `
-    <h3>Hello ${candidateName},</h3>
-    <p>Your interview is scheduled on <b>${interviewDate}</b> and remark is <b>${remark}</b>.</p>
-
-
-
-
     <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,7 +32,7 @@ export const interviewScheduledEmailTemplate = (
        
         <!-- Content -->
         <div class="content">
-            <p class="greeting">Dear <strong>Parth Patel</strong>,</p>
+            <p class="greeting">Dear <strong>${candidateName}</strong>,</p>
             
             <p class="intro-text">
                 Congratulations! We're impressed with your application and would like to invite you for an interview. We're looking forward to learning more about your experience and discussing how you can contribute to our team.
@@ -120,15 +114,15 @@ export const interviewScheduledEmailTemplate = (
                 <div class="contact-title">Contact Information</div>
                 <div class="contact-info">
                     <span>📧</span>
-                    <div><strong>Email:</strong>darshanprintf@gmail.com</div>
+                    <div><strong>Email:</strong>${Env.EMAIL_USER}</div>
                 </div>
                 <div class="contact-info">
                     <span>📞</span>
-                    <div><strong>Phone:</strong>9724089104</div>
+                    <div><strong>Phone:</strong>${Env.DEVLOPER_PHONE}</div>
                 </div>
                 <div class="contact-info">
                     <span>💬</span>
-                    <div><strong>WhatsApp:</strong>9724089104</div>
+                    <div><strong>WhatsApp:</strong>${Env.DEVLOPER_PHONE}</div>
                 </div>
             </div>
             
@@ -139,15 +133,10 @@ export const interviewScheduledEmailTemplate = (
             </p>
             
             <p class="signature">
-                Best wishes,
-                <br>
-                HR: Darshan Talaviya  
-                <br>
-                TalentOS (1.0.0)
-                <br>
-                Ahmedabad,Gujarat,India
-                <br>
-                Monday, Jan 15, 2025
+                Best regards,<br>
+                The <strong>${Env.PROJECT_NAME}</strong> Team<br>
+                ${currentDate} <br>
+                ${currentTime}
                 
             </p>
         </div>

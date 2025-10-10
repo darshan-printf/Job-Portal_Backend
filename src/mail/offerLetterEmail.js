@@ -19,7 +19,9 @@ export const offerLetterEmailTemplate = ({
 Congratulations! You have been selected for the position of ${jobTitle} in ${jobField} at ${companyName}.
 Your expected salary package is ₹${salary || "Negotiable"}.
 
-Interview Date: ${interviewDate ? new Date(interviewDate).toDateString() : "N/A"}
+Interview Date: ${
+    interviewDate ? new Date(interviewDate).toDateString() : "N/A"
+  }
 Remark: ${remark || "None"}
 
 We are excited to have you join our team!
@@ -29,20 +31,6 @@ ${companyName} HR Team
 `;
 
   const html = `
-    <h2>Congratulations, ${candidateName}!</h2>
-    <p>We are pleased to offer you the position of <b>${jobTitle}</b> in the <b>${jobField}</b> department at <b>${companyName}</b>.</p>
-    <p><b>Salary:</b> ₹${salary || "Negotiable"}</p>
-    ${interviewDate ? `<p><b>Interview Date:</b> ${new Date(interviewDate).toLocaleDateString()}</p>` : ""}
-    ${remark ? `<p><b>Remark:</b> ${remark}</p>` : ""}
-    <p>We look forward to welcoming you to our team!</p>
-    <br/>
-    <p>Best Regards,<br/>${companyName} HR Team</p>
-
-
-
-
-
-
     <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -122,8 +110,10 @@ ${companyName} HR Team
         </p>
 
         <p class="signature">
-          Best regards,<br />
-          <strong>[Company Name] HR Team</strong>
+              Best regards,<br>
+                The <strong>${Env.PROJECT_NAME}</strong> Team<br>
+                ${currentDate} <br>
+                ${currentTime}
         </p>
       </div>
 
@@ -134,25 +124,25 @@ ${companyName} HR Team
           For any inquiries, please reach out to our HR department.
         </p>
         <div class="social-icons">
-          <a href="[FACEBOOK_URL]"
+          <a"
             ><img
               src="https://cdn-icons-png.freepik.com/512/2626/2626270.png?uid=R165505067&ga=GA1.1.701570569.1719990316"
               alt="Facebook"
               style="width: 40px; height: 40px"
           /></a>
-          <a href="[TWITTER_URL]"
+          <a "
             ><img
               src="https://cdn-icons-png.freepik.com/512/15707/15707753.png?uid=R165505067&ga=GA1.1.701570569.1719990316"
               alt="Twitter"
               style="width: 40px; height: 40px"
           /></a>
-          <a href="[LINKEDIN_URL]"
+          <a "
             ><img
               src="https://cdn-icons-png.freepik.com/512/733/733609.png?uid=R165505067&ga=GA1.1.701570569.1719990316"
               alt="LinkedIn"
               style="width: 40px; height: 40px"
           /></a>
-          <a href="[INSTAGRAM_URL]"
+          <a "
             ><img
               src="https://cdn-icons-png.freepik.com/512/13077/13077796.png?uid=R165505067&ga=GA1.1.701570569.1719990316"
               alt="Instagram"
@@ -160,7 +150,9 @@ ${companyName} HR Team
           /></a>
         </div>
         <p class="footer-text" style="margin-top: 20px">
-            © Copyright ${Env.PROJECT_LONCHE_YEAR} <strong>${Env.PROJECT_NAME}</strong>.${Env.PROJECT_VERSION} All rights reserved. Read our Privacy Policy
+            © Copyright ${Env.PROJECT_LONCHE_YEAR} <strong>${
+    Env.PROJECT_NAME
+  }</strong>.${Env.PROJECT_VERSION} All rights reserved. Read our Privacy Policy
         </p>
       </div>
     </div>

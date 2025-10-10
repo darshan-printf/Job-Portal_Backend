@@ -11,12 +11,8 @@ const interviewRejectedEmailTemplate = (
   const subject = `Interview Rejected on ${interviewDate}`;
   const text = `Hello ${candidateName},`;
   const html = `
-    <h3>Hello ${candidateName},</h3>
-    <p>Your interview on <b>${interviewDate}</b> has been rejected.${remark ? `<br>Reason: ${remark}` : ""}</p>
-
-
-
-    <!DOCTYPE html>
+   
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -31,7 +27,7 @@ const interviewRejectedEmailTemplate = (
         <div class="logo">
           <img
             src="https://cdn-icons-png.freepik.com/512/5968/5968374.png?uid=R165505067&ga=GA1.1.701570569.1719990316"
-            alt="${PROJECT_NAME}"
+            alt="logo"
             style="width: 60px; height: 60px"
           />
         </div>
@@ -41,7 +37,7 @@ const interviewRejectedEmailTemplate = (
 
       <!-- Content -->
       <div class="content">
-        <p class="greeting">Hello, <strong>[Candidate Name]</strong> 👋</p>
+        <p class="greeting">Hello, <strong>${candidateName}</strong> 👋</p>
 
         <p class="message">
           Thank you for taking the time to interview for the
@@ -76,8 +72,10 @@ const interviewRejectedEmailTemplate = (
         </p>
 
         <p class="signature">
-          Warm regards,<br />
-          <strong>The [Company Name] Recruitment Team</strong>
+                Best regards,<br>
+                The <strong>${Env.PROJECT_NAME}</strong> Team<br>
+                ${currentDate} <br>
+                ${currentTime}
         </p>
       </div>
 
@@ -88,25 +86,25 @@ const interviewRejectedEmailTemplate = (
           email. For any questions, contact our support team.
         </p>
         <div class="social-icons">
-          <a href="[FACEBOOK_URL]"
+          <a "
             ><img
               src="https://cdn-icons-png.freepik.com/512/2626/2626270.png?uid=R165505067&ga=GA1.1.701570569.1719990316"
               alt="Facebook"
               style="width: 40px; height: 40px"
           /></a>
-          <a href="[TWITTER_URL]"
+          <a "
             ><img
               src="https://cdn-icons-png.freepik.com/512/15707/15707753.png?uid=R165505067&ga=GA1.1.701570569.1719990316"
               alt="Twitter"
               style="width: 40px; height: 40px"
           /></a>
-          <a href="[LINKEDIN_URL]"
+          <a "
             ><img
               src="https://cdn-icons-png.freepik.com/512/733/733609.png?uid=R165505067&ga=GA1.1.701570569.1719990316"
               alt="LinkedIn"
               style="width: 40px; height: 40px"
           /></a>
-          <a href="[INSTAGRAM_URL]"
+          <a "
             ><img
               src="https://cdn-icons-png.freepik.com/512/13077/13077796.png?uid=R165505067&ga=GA1.1.701570569.1719990316"
               alt="Instagram"
@@ -114,7 +112,7 @@ const interviewRejectedEmailTemplate = (
           /></a>
         </div>
         <p class="footer-text" style="margin-top: 20px">
-            © Copyright ${Env.PROJECT_LONCHE_YEAR} <strong>${Env.PROJECT_NAME}</strong>.${Env.PROJECT_VERSION} All rights reserved. Read our Privacy Policy
+          © Copyright ${Env.PROJECT_LONCHE_YEAR} <strong>${Env.PROJECT_NAME}</strong>.${Env.PROJECT_VERSION} All rights reserved. Read our Privacy Policy
         </p>
       </div>
     </div>
