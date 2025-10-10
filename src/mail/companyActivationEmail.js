@@ -3,15 +3,10 @@ const Env = process.env;
 const currentDate = moment().format("dddd, MMM DD, YYYY");
 const currentTime = moment().format("hh:mm A");
 
-export const companyActivationEmailTemplate = (
-    companyName,
-    username,
-    plainPassword
-) => {
+export const companyActivationEmailTemplate = ( companyName,username,plainPassword) => {
+
     const subject = `Your Company ${companyName} Account Activated`;
-
     const text = `Hello ${companyName} ,Your account is now active.`;
-
     const html = `
     <!DOCTYPE html>
 <html lang="en">
