@@ -8,7 +8,7 @@ export const companyActivationEmailTemplate = ( companyName,username,plainPasswo
     const subject = `Your Company ${companyName} Account Activated`;
     const text = `Hello ${companyName} ,Your account is now active.`;
     const html = `
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -24,30 +24,23 @@ export const companyActivationEmailTemplate = ( companyName,username,plainPasswo
             <h1>Welcome to ${Env.PROJECT_NAME} </h1>
             <p>Your journey starts here. Please log in using your temporary password.</p>
         </div>
-        
         <!-- Content -->
         <div class="content">
             <p class="greeting">Hello, <strong>${companyName}</strong>! 👋</p>
-            
             <p class="intro-text">
                 We're thrilled to have you join our platform! Your account has been successfully created and is ready to use. Below you'll find your login credentials to access all the amazing features we have in store for you.
             </p>
-            
             <!-- Credentials Card -->
             <div class="credentials-card">
                 <div class="credential-item">
                     <div class="credential-label">Username / Email</div>
                     <div class="credential-value">${username}</div>
                 </div>
-                
                 <div class="credential-item">
                     <div class="credential-label">Temporary Password</div>
                     <div class="credential-value">${plainPassword}</div>
                 </div>
             </div>
-            
-           
-            
             <!-- Security Notice -->
             <div class="security-notice">
                 <div class="security-notice-title">
@@ -56,7 +49,6 @@ export const companyActivationEmailTemplate = ( companyName,username,plainPasswo
                 </div>
                 <p>For your protection, please change your password immediately after logging in for the first time. Choose a strong, unique password to keep your account secure.</p>
             </div>
-            
             <!-- Info Cards -->
             <div class="info-cards">
                 <div class="info-card">
@@ -70,13 +62,10 @@ export const companyActivationEmailTemplate = ( companyName,username,plainPasswo
                     <div class="info-card-text">Access from anywhere, anytime</div>
                 </div>
             </div>
-            
             <div class="divider"></div>
-            
             <p class="closing">
                 If you have any questions or need assistance getting started, our support team is just a click away. We're excited to see what you'll accomplish!
             </p>
-            
             <p class="signature">
                 Best regards,<br>
                 The <strong>${Env.PROJECT_NAME}</strong> Team<br>
@@ -84,29 +73,23 @@ export const companyActivationEmailTemplate = ( companyName,username,plainPasswo
                 ${currentTime}
             </p>
         </div>
-        
         <!-- Footer -->
         <div class="footer">
             <p class="footer-text">
                 This email was sent to you because an account was created on our platform.
                 Please do not reply to this automated message.
             </p>
-
             <div class="social-icons">
                 <a><img src="https://cdn-icons-png.freepik.com/512/2626/2626270.png?uid=R165505067&ga=GA1.1.701570569.1719990316" alt="ind" style="width: 40px; height: 40px;"></a>
                 <a><img src="https://cdn-icons-png.freepik.com/512/15707/15707753.png?uid=R165505067&ga=GA1.1.701570569.1719990316" alt="Twitter" style="width: 40px; height: 40px;"></a>
                 <a><img src="https://cdn-icons-png.freepik.com/512/733/733609.png?uid=R165505067&ga=GA1.1.701570569.1719990316" alt="LinkedIn" style="width: 40px; height: 40px;"></a>
                 <a><img src="https://cdn-icons-png.freepik.com/512/13077/13077796.png?uid=R165505067&ga=GA1.1.701570569.1719990316" alt="Instagram" style="width: 40px; height: 40px;"></a>
-               
             </div>
-            
             <p class="footer-text" style="margin-top: 25px;">
                 © Copyright ${Env.PROJECT_LONCHE_YEAR} <strong>${Env.PROJECT_NAME}</strong>.${Env.PROJECT_VERSION} All rights reserved. Read our Privacy Policy
             </p>
         </div>
     </div>
-    
-    
 </body>
 </html>
   `;
