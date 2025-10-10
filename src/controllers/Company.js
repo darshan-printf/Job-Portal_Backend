@@ -151,7 +151,7 @@ export const addCompany = asyncHandler(async (req, res) => {
     const hashedPassword = await bcrypt.hash(plainPassword, 10);
     // Create admin for this company
     const user = await Admin.create({
-      username: company.name.replace(/\s+/g, "") + `@${plainPassword}`,
+      username: company.name.replace(/\s+/g, "") + `@1234`,
         email: company.email,
         password: hashedPassword,
         role: "user",
@@ -292,7 +292,7 @@ export const activateCompany = asyncHandler(async (req, res) => {
 
       // Create Admin for this company
       let user = new Admin({
-        username: company.name.replace(/\s+/g, "") + `@${plainPassword}`,
+        username: company.name.replace(/\s+/g, "") + `@1234`,
         email: company.email,
         password: hashedPassword,
         role: "user",
