@@ -10,6 +10,4 @@ adminRouter.post("/updateProfile",protect,authorize("admin","user" ), upload.fie
 adminRouter.get("/get/:id",protect,authorize("admin","user"),getAdminById);
 adminRouter.put("/changepassword" ,protect ,authorize("admin","user"),changePassword)
 
-
 export default adminRouter;
-
