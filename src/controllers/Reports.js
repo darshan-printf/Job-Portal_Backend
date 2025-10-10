@@ -8,7 +8,7 @@ import Company from "../models/Company.js";
 import Candidate from "../models/Candidate.js";
 import Schedule from "../models/Schedule.js";
 
-// get total counts
+// get total counts for SuperAdminDashboard
 export const getTotalCounts = asyncHandler(async (req, res) => {
     const totalCountries = await Country.countDocuments();
     const totalStates = await State.countDocuments();
@@ -51,5 +51,7 @@ export const getTotalCountsForAdminDashboard = asyncHandler(async (req, res) => 
         totalCompletedCandidates,
     });
 });
+
+ 
 
 
