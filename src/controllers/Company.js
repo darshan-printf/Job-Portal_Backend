@@ -386,9 +386,16 @@ export const getCompanyByUser = asyncHandler(async (req, res) => {
       message: "Company not found",
     });
   }
+  const jobsCount = await Job.countDocuments({ companyId: company._id });
+  const candidatesCount = await Candidate.countDocuments({ companyId: company._id });
+  const offeredCount = await Schedule.countDocuments({ companyId: company._id, status: "offered" });
+
   const companyWithBase64Logo = {
     ...company.toObject(),
     logo: company.logo ? imageToBase64(company.logo) : "",
+    jobs: jobsCount,
+    candidates: candidatesCount,
+    offered: offeredCount,
   };
   res.status(200).json({
     success: true,
