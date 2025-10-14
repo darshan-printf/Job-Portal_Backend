@@ -16,7 +16,6 @@ export const getTotalCounts = asyncHandler(async (req, res) => {
     const totalUsers = await Admin.countDocuments({ role: "user" });
     const totalJobs = await Job.countDocuments();
     const totalCompanies = await Company.countDocuments();
-
     res.json({
         totalCountries,
         totalStates,
@@ -24,7 +23,6 @@ export const getTotalCounts = asyncHandler(async (req, res) => {
         totalUsers,
         totalJobs,
         totalCompanies
-
     });
 });
 
@@ -40,10 +38,6 @@ export const getTotalCountsForAdminDashboard = asyncHandler(async (req, res) => 
     const totalCandidates = await Candidate.countDocuments({ companyId });
     const totalPendingCandidates = await Schedule.countDocuments({ companyId, status: "scheduled" });
     const totalCompletedCandidates = await Schedule.countDocuments({ companyId, status: { $in: ["accepted", "offered"] } });
-
-
-
-    
     res.json({
         totalJobs,
         totalCandidates,
@@ -52,6 +46,19 @@ export const getTotalCountsForAdminDashboard = asyncHandler(async (req, res) => 
     });
 });
 
- 
-
-
+// get total company job locations and candidate 
+export const getCompanyJobLocationsAndCandidates = asyncHandler(async (req, res) => {
+    const totalCountries = await Country.countDocuments();
+    const totalStates = await State.countDocuments();
+    const totalCities = await City.countDocuments();
+    const totalCompanies = await Company.countDocuments();
+    const totalJobs = await Job.countDocuments();
+    const totalCandidates = await Candidate.countDocuments();
+    res.json({
+       
+        locatons: totalCountries + totalStates + totalCities,
+        totalCompanies,
+        totalJobs,
+        totalCandidates
+    });
+});
