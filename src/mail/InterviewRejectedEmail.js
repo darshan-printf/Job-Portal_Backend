@@ -6,7 +6,8 @@ const currentTime = moment().format("hh:mm A");
 const interviewRejectedEmailTemplate = (
   candidateName,
   interviewDate,
-  remark
+  remark,
+  schedule
 ) => {
   const subject = `Interview Rejected on ${interviewDate}`;
   const text = `Hello ${candidateName},`;

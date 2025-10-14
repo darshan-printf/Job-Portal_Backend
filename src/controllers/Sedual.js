@@ -12,8 +12,9 @@ export const updateSchedule = asyncHandler(async (req, res) => {
   const scheduleId = req.params.id;
   const { interviewDate, status, remark } = req.body;
 
+
   // ✅ Find schedule and populate candidate info
-  const schedule = await Schedule.findById(scheduleId).populate("candidateId");
+  const schedule = await Schedule.findById(scheduleId).populate("candidateId").populate("jobId").populate("companyId");
   if (!schedule) {
     return res.status(404).json({ message: "Schedule not found" });
   }
@@ -23,7 +24,8 @@ export const updateSchedule = asyncHandler(async (req, res) => {
     const { subject, text, html } = interviewScheduledEmailTemplate(
       schedule.candidateId.name,
       interviewDate,
-      remark
+      remark,
+      schedule
     );
 
     try {
@@ -38,7 +40,9 @@ export const updateSchedule = asyncHandler(async (req, res) => {
     const { subject, text, html } = interviewCancelledEmailTemplate(
       schedule.candidateId.name,
       interviewDate,
-      remark
+      remark,
+      schedule
+
     );
 
     try {
@@ -53,7 +57,8 @@ export const updateSchedule = asyncHandler(async (req, res) => {
     const { subject, text, html } = interviewRejectedEmailTemplate(
       schedule.candidateId.name,
       interviewDate,
-      remark
+      remark,
+      schedule
     );
 
     try {

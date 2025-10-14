@@ -6,7 +6,9 @@ const currentTime = moment().format("hh:mm A");
 export const interviewScheduledEmailTemplate = (
   candidateName,
   interviewDate,
-  remark
+  remark,
+  schedule
+
 ) => {
   const subject = "Interview Scheduled";
 

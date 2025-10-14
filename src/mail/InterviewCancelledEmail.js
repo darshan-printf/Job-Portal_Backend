@@ -3,7 +3,7 @@ const Env = process.env;
 const currentDate = moment().format("dddd, MMM DD, YYYY");
 const currentTime = moment().format("hh:mm A");
 
-const interviewCancelledEmailTemplate = (name, interviewDate, remark) => {
+const interviewCancelledEmailTemplate = (name, interviewDate, remark,schedule ) => {
   const subject = `Interview Cancelled on ${interviewDate.moment().format("dddd, MMM DD, YYYY hh:mm A")}  `;
   const text = `Hello ${name} , your interview has been cancelled`;
   const html = `
