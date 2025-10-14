@@ -8,6 +8,9 @@ import bcrypt from "bcryptjs";
 import Admin from "../models/Admin.js";
 import imageToBase64 from "../utils/imageToBase64.js";
 import { companyActivationEmailTemplate } from "../mail/companyActivationEmail.js";
+import Job from "../models/Job.js";
+import Candidate from "../models/Candidate.js";
+import Schedule from "../models/Schedule.js";
 
 // Utility function to generate a random password
 function generatePassword(length = 6) {
@@ -403,6 +406,32 @@ export const getAllCompaniesPublic = asyncHandler(async (req, res) => {
       logo: imageToBase64(company.logo),
     };
   });
+  res.status(200).json({
+    success: true,
+    data: companiesWithBase64Logo,
+  });
+});
+
+// get compnay  with jobs for public api
+export const getCompanyWithJobsPublic = asyncHandler(async (req, res) => {
+  const companies = await Company.find();
+
+  const companiesWithBase64Logo = await Promise.all(
+    companies.map(async (company) => {
+      const jobsCount = await Job.countDocuments({ companyId: company._id });
+      const candidatesCount = await Candidate.countDocuments({ companyId: company._id });
+      const offeredCount = await Schedule.countDocuments({ companyId: company._id, status: "offered" });
+
+      return {
+        ...company.toObject(),
+        logo: company.logo ? imageToBase64(company.logo) : "",
+        jobs: jobsCount,
+        candidates: candidatesCount,
+        offered: offeredCount,
+      };
+    })
+  );
+
   res.status(200).json({
     success: true,
     data: companiesWithBase64Logo,
