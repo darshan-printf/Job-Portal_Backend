@@ -184,3 +184,192 @@ export const getChartDataForSuperAdmin = asyncHandler(async (req, res) => {
         scheduleStatusData: scheduleStatusStats
     });
 });
+
+export const getChartDataForSuperAdminDeshboard = asyncHandler(async (req, res) => {
+    // 1. पिछले 7 दिनों के लिए तारीखें (Last 7 days)
+    const last7Days = [];
+    for (let i = 6; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        last7Days.push(date.toISOString().split('T')[0]);
+    }
+
+    // 2. पिछले 30 दिनों के लिए तारीखें (Last 30 days)
+    const last30Days = [];
+    for (let i = 29; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        last30Days.push(date.toISOString().split('T')[0]);
+    }
+
+    // 3. पिछले 12 महीनों के लिए (Last 12 months)
+    const last12Months = [];
+    for (let i = 11; i >= 0; i--) {
+        const date = new Date();
+        date.setMonth(date.getMonth() - i);
+        last12Months.push(date.toISOString().slice(0, 7)); // YYYY-MM format
+    }
+
+    // 4. यूज़र क्रिएशन डेटा - पिछले 7 दिन (User Creation - Last 7 days)
+    const userStatsLast7Days = await Admin.aggregate([
+        { 
+            $match: { 
+                role: "user", 
+                createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } 
+            } 
+        },
+        {
+            $group: {
+                _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+                count: { $sum: 1 }
+            }
+        },
+        { $sort: { "_id": 1 } }
+    ]);
+
+    // 5. यूज़र क्रिएशन डेटा - पिछले 30 दिन (User Creation - Last 30 days)
+    const userStatsLast30Days = await Admin.aggregate([
+        { 
+            $match: { 
+                role: "user", 
+                createdAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } 
+            } 
+        },
+        {
+            $group: {
+                _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+                count: { $sum: 1 }
+            }
+        },
+        { $sort: { "_id": 1 } }
+    ]);
+
+    // 6. यूज़र क्रिएशन डेटा - पिछले 12 महीने (User Creation - Last 12 months)
+    const userStatsLast12Months = await Admin.aggregate([
+        { 
+            $match: { 
+                role: "user", 
+                createdAt: { $gte: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000) } 
+            } 
+        },
+        {
+            $group: {
+                _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
+                count: { $sum: 1 }
+            }
+        },
+        { $sort: { "_id": 1 } }
+    ]);
+
+    // 7. जॉब क्रिएशन डेटा - पिछले 7 दिन (Job Creation - Last 7 days)
+    const jobStatsLast7Days = await Job.aggregate([
+        { 
+            $match: { 
+                createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } 
+            } 
+        },
+        {
+            $group: {
+                _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+                count: { $sum: 1 }
+            }
+        },
+        { $sort: { "_id": 1 } }
+    ]);
+
+    // 8. जॉब क्रिएशन डेटा - पिछले 30 दिन (Job Creation - Last 30 days)
+    const jobStatsLast30Days = await Job.aggregate([
+        { 
+            $match: { 
+                createdAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) } 
+            } 
+        },
+        {
+            $group: {
+                _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+                count: { $sum: 1 }
+            }
+        },
+        { $sort: { "_id": 1 } }
+    ]);
+
+    // 9. जॉब क्रिएशन डेटा - पिछले 12 महीने (Job Creation - Last 12 months)
+    const jobStatsLast12Months = await Job.aggregate([
+        { 
+            $match: { 
+                createdAt: { $gte: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000) } 
+            } 
+        },
+        {
+            $group: {
+                _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
+                count: { $sum: 1 }
+            }
+        },
+        { $sort: { "_id": 1 } }
+    ]);
+
+    // 10. शेड्यूल स्टेटस का डेटा (Schedule Status Data)
+    const scheduleStatusStats = await Schedule.aggregate([
+        {
+            $group: {
+                _id: "$status",
+                count: { $sum: 1 }
+            }
+        }
+    ]);
+
+    // 11. Final data preparation
+    const finalUserStatsLast7Days = last7Days.map(date => {
+        const found = userStatsLast7Days.find(stat => stat._id === date);
+        return found ? found.count : 0;
+    });
+
+    const finalUserStatsLast30Days = last30Days.map(date => {
+        const found = userStatsLast30Days.find(stat => stat._id === date);
+        return found ? found.count : 0;
+    });
+
+    const finalUserStatsLast12Months = last12Months.map(month => {
+        const found = userStatsLast12Months.find(stat => stat._id === month);
+        return found ? found.count : 0;
+    });
+
+    const finalJobStatsLast7Days = last7Days.map(date => {
+        const found = jobStatsLast7Days.find(stat => stat._id === date);
+        return found ? found.count : 0;
+    });
+
+    const finalJobStatsLast30Days = last30Days.map(date => {
+        const found = jobStatsLast30Days.find(stat => stat._id === date);
+        return found ? found.count : 0;
+    });
+
+    const finalJobStatsLast12Months = last12Months.map(month => {
+        const found = jobStatsLast12Months.find(stat => stat._id === month);
+        return found ? found.count : 0;
+    });
+
+    res.json({
+        // Daily Data (7 days)
+        daily: {
+            dates: last7Days,
+            newUsers: finalUserStatsLast7Days,
+            newJobs: finalJobStatsLast7Days
+        },
+        // Monthly Data (30 days)
+        monthly: {
+            dates: last30Days,
+            newUsers: finalUserStatsLast30Days,
+            newJobs: finalJobStatsLast30Days
+        },
+        // Yearly Data (12 months)
+        yearly: {
+            months: last12Months,
+            newUsers: finalUserStatsLast12Months,
+            newJobs: finalJobStatsLast12Months
+        },
+        // Other Data
+        scheduleStatusData: scheduleStatusStats
+    });
+});
