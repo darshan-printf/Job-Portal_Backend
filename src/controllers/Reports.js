@@ -122,6 +122,7 @@ export const getFullReportForSuperAdmin = asyncHandler(async (req, res) => {
   });
 });
 
+// get chart data for super admin
 export const getChartDataForSuperAdmin = asyncHandler(async (req, res) => {
     // 1. पिछले 7 दिनों के लिए तारीखें (Dates for last 7 days)
     const last7Days = [];
@@ -185,6 +186,7 @@ export const getChartDataForSuperAdmin = asyncHandler(async (req, res) => {
     });
 });
 
+// get chart data for super admin dashboard
 export const getChartDataForSuperAdminDeshboard = asyncHandler(async (req, res) => {
     // 1. पिछले 7 दिनों के लिए तारीखें (Last 7 days)
     const last7Days = [];
@@ -373,3 +375,65 @@ export const getChartDataForSuperAdminDeshboard = asyncHandler(async (req, res) 
         scheduleStatusData: scheduleStatusStats
     });
 });
+
+//get chart data for admin dashboard
+export const getChartDataForAdminDashboard = asyncHandler(async (req, res) => {
+  const adminId = req.admin._id;
+  const admin = await Admin.findById(adminId);
+
+  if (!admin) {
+    return res.status(404).json({ message: "Admin not found" });
+  }
+
+  const companyId = admin.companyId;
+
+  // ✅ Support both from/to and fromDate/toDate
+  const from = req.query.from || req.query.fromDate;
+  const to = req.query.to || req.query.toDate;
+
+  const startDate = from ? new Date(from) : new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const endDate = to ? new Date(to) : new Date();
+
+  startDate.setHours(0, 0, 0, 0);
+  endDate.setHours(23, 59, 59, 999);
+
+  const jobWiseStats = await Candidate.aggregate([
+    {
+      $lookup: {
+        from: "jobs",
+        localField: "jobId",
+        foreignField: "_id",
+        as: "jobInfo"
+      }
+    },
+    { $unwind: "$jobInfo" },
+
+    // ✅ Date filter (only jobs inside range)
+    {
+      $match: {
+        "jobInfo.companyId": companyId,
+        "jobInfo.createdAt": { $gte: startDate, $lte: endDate }
+      }
+    },
+
+    // ✅ Group by job
+    {
+      $group: {
+        _id: "$jobId",
+        jobTitle: { $first: "$jobInfo.title" },
+        jobDate: { $first: "$jobInfo.createdAt" },
+        totalCandidates: { $sum: 1 },
+        approved: { $sum: { $cond: [{ $eq: ["$status", "accepted"] }, 1, 0] } },
+        rejected: { $sum: { $cond: [{ $eq: ["$status", "rejected"] }, 1, 0] } },
+        pending: { $sum: { $cond: [{ $eq: ["$status", "pending"] }, 1, 0] } }
+      }
+    }
+  ]);
+
+  return res.json({
+    jobsStats: jobWiseStats
+  });
+});
+
+
+
