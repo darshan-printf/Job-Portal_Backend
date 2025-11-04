@@ -12,6 +12,8 @@ import Package from "../models/Package.js";
 import Schedule from "../models/Schedule.js";
 import State from "../models/States.js";
 import Team from "../models/Team.js";
+import mongoose from "mongoose";
+
 
 // get total counts for SuperAdminDashboard
 export const getTotalCounts = asyncHandler(async (req, res) => {
@@ -387,7 +389,6 @@ export const getChartDataForAdminDashboard = asyncHandler(async (req, res) => {
 
   const companyId = admin.companyId;
 
-  // ✅ Support both from/to and fromDate/toDate
   const from = req.query.from || req.query.fromDate;
   const to = req.query.to || req.query.toDate;
 
@@ -397,26 +398,27 @@ export const getChartDataForAdminDashboard = asyncHandler(async (req, res) => {
   startDate.setHours(0, 0, 0, 0);
   endDate.setHours(23, 59, 59, 999);
 
-  const jobWiseStats = await Candidate.aggregate([
+  const jobWiseStats = await Schedule.aggregate([
+    // ✅ Join Job Data
     {
       $lookup: {
         from: "jobs",
         localField: "jobId",
         foreignField: "_id",
-        as: "jobInfo"
-      }
+        as: "jobInfo",
+      },
     },
     { $unwind: "$jobInfo" },
 
-    // ✅ Date filter (only jobs inside range)
+    // ✅ Filter by Company + Date
     {
       $match: {
-        "jobInfo.companyId": companyId,
-        "jobInfo.createdAt": { $gte: startDate, $lte: endDate }
-      }
+        "jobInfo.companyId": new mongoose.Types.ObjectId(companyId),
+        "jobInfo.createdAt": { $gte: startDate, $lte: endDate },
+      },
     },
 
-    // ✅ Group by job
+    // ✅ Group by Job Id and count statuses
     {
       $group: {
         _id: "$jobId",
@@ -425,15 +427,16 @@ export const getChartDataForAdminDashboard = asyncHandler(async (req, res) => {
         totalCandidates: { $sum: 1 },
         approved: { $sum: { $cond: [{ $eq: ["$status", "accepted"] }, 1, 0] } },
         rejected: { $sum: { $cond: [{ $eq: ["$status", "rejected"] }, 1, 0] } },
-        pending: { $sum: { $cond: [{ $eq: ["$status", "pending"] }, 1, 0] } }
-      }
-    }
+        pending: { $sum: { $cond: [{ $eq: ["$status", "pending"] }, 1, 0] } },
+        scheduled: { $sum: { $cond: [{ $eq: ["$status", "scheduled"] }, 1, 0] } },
+        completed: { $sum: { $cond: [{ $eq: ["$status", "completed"] }, 1, 0] } },
+        cancelled: { $sum: { $cond: [{ $eq: ["$status", "cancelled"] }, 1, 0] } },
+        offered: { $sum: { $cond: [{ $eq: ["$status", "offered"] }, 1, 0] } }
+      },
+    },
   ]);
 
   return res.json({
-    jobsStats: jobWiseStats
+    jobsStats: jobWiseStats,
   });
 });
-
-
-
