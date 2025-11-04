@@ -19,7 +19,7 @@ export const addJobAdmin = asyncHandler(async (req, res) => {
 // get all jobs
 export const getAllJobs = asyncHandler(async (req, res) => {
   const jobs = await Job.find()
-    .select("title experience salary type companyId package")
+    .select("title experience salary type companyId package country state city createdAt description workingHours shift flexibleWorkingHours noticePeriod bondTime benefits bondDescription skills tool package createdAt updatedAt ")
     .populate("country", "name")
     .populate("state", "name")
     .populate("city", "name")
@@ -36,6 +36,18 @@ export const getAllJobs = asyncHandler(async (req, res) => {
     state: job.state?.name || null,
     city: job.city?.name || null,
     package: job.package || null,
+    createdAt: job.createdAt,
+    description: job.description,
+    workingHours: job.workingHours,
+    shift: job.shift,
+    flexibleWorkingHours: job.flexibleWorkingHours,
+    noticePeriod: job.noticePeriod,
+    bondTime: job.bondTime,
+    benefits: job.benefits,
+    bondDescription: job.bondDescription,
+    skills: job.skills,
+    tool: job.tool,
+    updatedAt: job.updatedAt,
     company: job.companyId
       ? {
           _id: job.companyId._id,
