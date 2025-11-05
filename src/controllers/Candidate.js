@@ -11,7 +11,7 @@ export const applyJob = asyncHandler(async (req, res) => {
   const { name, email, phone, jobId, companyId } = req.body;
 
 // phone check are not unique give errior 
-  const existingCandidate = await Candidate.findOne({ phone });
+  const existingCandidate = await Candidate.findOne({ phone ,jobId  });
   
 
   if (existingCandidate) {
