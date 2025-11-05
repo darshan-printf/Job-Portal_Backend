@@ -8,7 +8,17 @@ import Schedule from "../models/Schedule.js";
 
 // apply job
 export const applyJob = asyncHandler(async (req, res) => {
-  const { name, email, phone, jobId, resume, companyId } = req.body;
+  const { name, email, phone, jobId, companyId } = req.body;
+
+// phone check are not unique give errior 
+  const existingCandidate = await Candidate.findOne({ phone });
+  
+
+  if (existingCandidate) {
+    return res.status(400).json({
+    message: `${existingCandidate.name} you have already applied for this job`,
+     });
+  }
   const candidate = await Candidate.create({
     name,
     email,
