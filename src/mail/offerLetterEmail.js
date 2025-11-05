@@ -248,12 +248,12 @@ ${companyName} HR Team
 
       <!-- Content -->
       <div class="content">
-        <p class="greeting">Dear <strong>[Candidate Name]</strong>,</p>
+        <p class="greeting">Dear <strong>${candidateName}</strong>,</p>
 
         <p class="message">
           We are delighted to inform you that you have been
           <strong>selected</strong> for the position of
-          <strong>[Job Title]</strong> at <strong>[Company Name]</strong>. After
+          <strong>${jobTitle}</strong> at <strong>${companyName}</strong>. After
           a thorough review and interview process, our team was highly impressed
           by your performance and qualifications.
         </p>
@@ -272,19 +272,19 @@ ${companyName} HR Team
           <table>
             <tr>
               <td>Job Title:</td>
-              <td>[Job Title]</td>
+              <td>${jobTitle}</td>
             </tr>
             <tr>
               <td>Salary:</td>
-              <td>[Salary Details]</td>
+              <td>${salary}</td>
             </tr>
             <tr>
               <td>Joining Date:</td>
-              <td>[Joining Date]</td>
+              <td>${interviewDate}</td>
             </tr>
             <tr>
               <td>Work Location:</td>
-              <td>[Office / Remote / Hybrid]</td>
+              <td>${jobField}</td>
             </tr>
           </table>
         </div>
@@ -312,8 +312,7 @@ ${companyName} HR Team
       <!-- Footer -->
       <div class="footer">
         <p class="footer-text">
-          This is an automated message – please do not reply directly.<br />
-          For any inquiries, please reach out to our HR department.
+          This is an automated message – please do not reply directly. For any inquiries, please reach out to our HR department.
         </p>
         <div class="social-icons">
           <a"

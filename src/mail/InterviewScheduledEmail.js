@@ -3,11 +3,14 @@ const Env = process.env;
 const currentDate = moment().format("dddd, MMM DD, YYYY");
 const currentTime = moment().format("hh:mm A");
 
+
 export const interviewScheduledEmailTemplate = (
   candidateName,
   interviewDate,
   remark,
-  schedule
+  schedule,
+  date,
+  time
 
 ) => {
   const subject = "Interview Scheduled";
@@ -422,12 +425,12 @@ export const interviewScheduledEmailTemplate = (
                     <div class="date-time-card">
                         <div class="date-time-icon">📅</div>
                         <div class="date-time-label">Date</div>
-                        <div class="date-time-value">Monday, Jan 15, 2025</div>
+                        <div class="date-time-value">${date}</div>
                     </div>
                     <div class="date-time-card">
                         <div class="date-time-icon">🕐</div>
                         <div class="date-time-label">Time</div>
-                        <div class="date-time-value">10:00 AM </div>
+                        <div class="date-time-value">${time} </div>
                     </div>
                 </div>
                 
@@ -436,7 +439,7 @@ export const interviewScheduledEmailTemplate = (
                     <div class="detail-icon">💼</div>
                     <div class="detail-content">
                         <div class="detail-label">Position</div>
-                        <div class="detail-value">Senior Software Engineer</div>
+                        <div class="detail-value">${schedule.jobId?.title}</div>
                     </div>
                 </div>
                 
@@ -445,7 +448,7 @@ export const interviewScheduledEmailTemplate = (
                     <div class="detail-icon">📍</div>
                     <div class="detail-content">
                         <div class="detail-label">Location / Meeting Link</div>
-                        <div class="detail-value">Nikol Ahemdabad</div>
+                        <div class="detail-value">${schedule.jobId?.city}, ${schedule.jobId?.state}, ${schedule.jobId?.country} </div>
                     </div>
                 </div>
                 

@@ -19,13 +19,18 @@ export const updateSchedule = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: "Schedule not found" });
   }
 
+const date = moment(interviewDate).format("dddd, MMM DD, YYYY");
+const time = moment(interviewDate).format("hh:mm A");
+
   // ✅ If status is "scheduled", send interview email
   if (status === "scheduled" && schedule.candidateId?.email) {
     const { subject, text, html } = interviewScheduledEmailTemplate(
       schedule.candidateId.name,
       interviewDate,
       remark,
-      schedule
+      schedule,
+      date,
+      time
     );
 
     try {
@@ -41,7 +46,7 @@ export const updateSchedule = asyncHandler(async (req, res) => {
       schedule.candidateId.name,
       interviewDate,
       remark,
-      schedule
+      schedule.companyId.name
 
     );
 
@@ -58,7 +63,10 @@ export const updateSchedule = asyncHandler(async (req, res) => {
       schedule.candidateId.name,
       interviewDate,
       remark,
-      schedule
+      schedule,
+      
+      
+
     );
 
     try {

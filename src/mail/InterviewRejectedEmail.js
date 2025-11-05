@@ -7,7 +7,8 @@ const interviewRejectedEmailTemplate = (
   candidateName,
   interviewDate,
   remark,
-  schedule
+  schedule,
+  
 ) => {
   const subject = `Interview Rejected on ${interviewDate}`;
   const text = `Hello ${candidateName},`;
@@ -230,7 +231,7 @@ const interviewRejectedEmailTemplate = (
         <p class="closing">
           We wish you all the best in your professional journey and future
           endeavors. Thank you once again for considering
-          <strong>[Company Name]</strong> as a potential employer.
+          <strong>${schedule.companyId?.name}</strong> as a potential employer.
         </p>
 
         <p class="signature">
