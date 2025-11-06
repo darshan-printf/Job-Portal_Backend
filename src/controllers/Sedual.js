@@ -208,6 +208,7 @@ export const sendOfferLetter = asyncHandler(async (req, res) => {
     interviewDate,
     remark,
     companyName,
+    job
   });
 
   // ✅ Send email

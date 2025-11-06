@@ -11,6 +11,7 @@ export const offerLetterEmailTemplate = ({
   interviewDate,
   remark,
   companyName,
+  job
 }) => {
   const subject = `Offer Letter for ${jobTitle} at ${companyName}`;
 
@@ -284,7 +285,7 @@ ${companyName} HR Team
             </tr>
             <tr>
               <td>Work Location:</td>
-              <td>${jobField}</td>
+              <td>${companyName} ,${job.city}, ${job.state}, ${job.country} </td>
             </tr>
           </table>
         </div>
