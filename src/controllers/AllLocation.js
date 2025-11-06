@@ -3,6 +3,7 @@ import City from "../models/City.js";
 import imageToBase64 from "../utils/imageToBase64.js";
 import State from "../models/States.js";
 
+// get all countries states cities
 export const getAllCountriesStatesCities = asyncHandler(async (req, res) => {
   const cities = await City.find({}, "name")
     .populate({
