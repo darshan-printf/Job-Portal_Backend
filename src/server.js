@@ -55,8 +55,6 @@ const io = new Server(server, {
 const onlineUsers = new Map();
 
 io.on('connection', (socket) => {
-  console.log("✅ Socket connected:", socket.id);
-
   // ✅ join room
   socket.on('join', ({ userId }) => {
     onlineUsers.set(String(userId), socket.id);
