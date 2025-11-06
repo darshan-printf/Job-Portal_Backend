@@ -241,8 +241,7 @@ HR Team`;
     <!-- Footer -->
     <div class="footer">
       <p class="footer-text">
-        This is an automated message – please do not reply directly to this email.<br>
-        For any inquiries, contact our support team.
+        This is an automated message – please do not reply directly to this email. For any inquiries, contact our support team.
       </p>
       <div class="social-icons">
                 <a "><img src="https://cdn-icons-png.freepik.com/512/2626/2626270.png?uid=R165505067&ga=GA1.1.701570569.1719990316" alt="Facebook" style="width: 40px; height: 40px;"></a>
