@@ -98,7 +98,7 @@ export const getCandidateById = asyncHandler(async (req, res) => {
 export const changeCandidateStatus = asyncHandler(async (req, res) => {
   const { candidateId, status, remark, interviewDate } = req.body; 
 
-  const candidate = await Candidate.findById(candidateId);
+  const candidate = await Candidate.findById(candidateId).populate("jobId").populate("companyId");
   if (!candidate) {
     return res.status(404).json({ message: "Candidate not found" });
   }
@@ -114,7 +114,12 @@ export const changeCandidateStatus = asyncHandler(async (req, res) => {
 
   // Rejection case
   if (status === "rejected") {
-    const { subject, text, html } = rejectionEmailTemplate(candidate.name);
+    const { subject, text, html } = rejectionEmailTemplate(
+      candidate.name,
+      candidate
+     
+
+    );
     try {
       await sendEmail(candidate.email, subject, text, html);
     } catch (error) {

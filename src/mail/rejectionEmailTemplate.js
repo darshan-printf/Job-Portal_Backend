@@ -3,7 +3,7 @@ const Env = process.env;
 const currentDate = moment().format("dddd, MMM DD, YYYY");
 const currentTime = moment().format("hh:mm A");
 
-export const rejectionEmailTemplate = (candidateName) => {
+export const rejectionEmailTemplate = (candidateName, candidate) => {
   const subject = "Application Status - Rejected";
 
   const text = `Dear ${candidateName},
@@ -205,10 +205,10 @@ HR Team`;
 
     <!-- Content -->
     <div class="content">
-      <p class="greeting">Hello, <strong>[Candidate Name]</strong> 👋</p>
+      <p class="greeting">Hello, <strong>${candidateName}</strong> 👋</p>
 
       <p class="message">
-        Thank you for showing interest in the <strong>[Job Title]</strong> position at <strong>[Company Name]</strong> and for submitting your details to us.
+        Thank you for showing interest in the <strong>${candidate.jobId.title}</strong> position at <strong>${candidate.companyId.name}</strong> and for submitting your details to us.
       </p>
 
       <div class="notice-card">
@@ -227,8 +227,7 @@ HR Team`;
       </div>
 
       <p class="closing">
-        We truly appreciate the time and effort you put into your application.
-        Wishing you success in your career journey ahead.
+        We truly appreciate the time and effort you put into your application. Wishing you success in your career journey ahead.
       </p>
 
       <p class="signature">
@@ -264,5 +263,3 @@ HR Team`;
 
   return { subject, text, html };
 };
-
-
