@@ -14,8 +14,10 @@ import teamRoute from "./Team.js";
 import allLocationRoute from "./AllLocation.js";
 import candidateRoute from "./Candidate.js";
 import scheduleRoute from "./Sedual.js";
+import chatRoutes from "./chatRoutes.js";
 
 const rootRouter = Router();
+
 rootRouter.use('/auth',authRouter);
 rootRouter.use("/admin",adminRoutes);
 rootRouter.use('/country',countryRoute);
@@ -31,4 +33,6 @@ rootRouter.use('/team',teamRoute);
 rootRouter.use('/allLocation',allLocationRoute);
 rootRouter.use('/candidate',candidateRoute);
 rootRouter.use('/schedule',scheduleRoute);
+rootRouter.use("/chat", chatRoutes);
+
 export default rootRouter;
