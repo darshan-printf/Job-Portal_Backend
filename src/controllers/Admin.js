@@ -121,3 +121,40 @@ export const changePassword = asyncHandler(async (req, res) => {
     message: "Password changed successfully",
   });
 });
+
+// Get chat details for usre and admin
+export const getAdminDetails = asyncHandler(async (req, res) => {
+  const UserId = req.admin?._id;
+
+  if (!UserId) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  // ✅ Main admin
+  const mainAdmin = await Admin.findOne({ role: "admin" }).select("-password -__v");
+  if (!mainAdmin) {
+    return res.status(404).json({ message: "Main admin not found" });
+  }
+
+  // ✅ Current user
+  const User = await Admin.findById(UserId).select("-password -__v");
+  if (!User) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  // ✅ Convert admin to plain object then inject base64
+  const adminObj = mainAdmin.toObject();
+  adminObj.profileImage = imageToBase64(mainAdmin?.profileImage);
+
+  // ✅ Convert user to plain object then inject base64
+  const UserObj = User.toObject();
+  UserObj.profileImage = imageToBase64(User?.profileImage);
+
+  // ✅ Send both objects
+  res.status(200).json({
+    success: true,
+    admin: adminObj,
+    User: UserObj,
+  });
+});
+
