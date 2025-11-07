@@ -17,6 +17,9 @@ export const initSocket = (server) => {
 
     socket.on("join", ({ userId }) => {
       onlineUsers.set(String(userId), socket.id);
+
+      // ✅ Broadcast user is online
+      io.emit("userOnline", userId);
     });
 
     // ✅ TYPING START
@@ -35,14 +38,13 @@ export const initSocket = (server) => {
       }
     });
 
-    // ✅ MESSAGE SEND
+    // ✅ MESSAGE SEND (unchanged)
     socket.on("sendMessage", async (payload, ack) => {
       try {
         const { senderId, receiverId, message } = payload;
 
         const doc = await Message.create({ senderId, receiverId, message });
 
-        // Send to self
         io.to(socket.id).emit("receiveMessage", {
           _id: doc._id,
           senderId,
@@ -51,7 +53,6 @@ export const initSocket = (server) => {
           createdAt: doc.createdAt,
         });
 
-        // Send to receiver
         const recvSocket = onlineUsers.get(String(receiverId));
         if (recvSocket) {
           io.to(recvSocket).emit("receiveMessage", {
@@ -71,11 +72,23 @@ export const initSocket = (server) => {
       }
     });
 
+    // ✅ DISCONNECT
     socket.on("disconnect", () => {
+      let offlineUser = null;
+
       for (const [id, sid] of onlineUsers) {
-        if (sid === socket.id) onlineUsers.delete(id);
+        if (sid === socket.id) {
+          offlineUser = id;
+          onlineUsers.delete(id);
+        }
+      }
+
+      // ✅ Broadcast offline status
+      if (offlineUser) {
+        io.emit("userOffline", offlineUser);
       }
     });
+
   });
 
   return io;
