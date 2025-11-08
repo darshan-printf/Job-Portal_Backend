@@ -1,7 +1,9 @@
 import { Server } from "socket.io";
 import Message from "./models/Message.js";
+import Admin from "./models/Admin.js";
+import imageToBase64 from "../src/utils/imageToBase64.js";
 
-const onlineUsers = new Map();
+const onlineUsers = new Map(); // userId -> socketId
 
 export const initSocket = (server) => {
   const io = new Server(server, {
@@ -13,13 +15,49 @@ export const initSocket = (server) => {
     },
   });
 
-  io.on("connection", (socket) => {
+  // Function: Broadcast LIVE users list (online + offline + unseen count)
+  const broadcastUsers = async () => {
+    const users = await Admin.find({ role: "user" }).lean(); // ✅ Only users
 
-    socket.on("join", ({ userId }) => {
+    const finalUsers = await Promise.all(
+      users.map(async (u) => {
+        const unseen = await Message.countDocuments({
+          receiverId: u._id,
+          seen: false,
+        });
+
+        // ✅ Convert profile image to BASE64
+        let base64Image = "";
+        if (u.profileImage) {
+          try {
+            base64Image = await imageToBase64(u.profileImage);
+          } catch (err) {
+            base64Image = ""; // fallback
+          }
+        }
+
+        return {
+          ...u,
+          profileImage: base64Image, // ✅ Replace with base64
+          online: onlineUsers.has(String(u._id)),
+          unseen,
+        };
+      })
+    );
+
+    io.emit("usersList", finalUsers);
+  };
+
+  io.on("connection", (socket) => {
+    // ✅ User joins socket (login)
+    socket.on("join", async ({ userId }) => {
       onlineUsers.set(String(userId), socket.id);
 
-      // ✅ Broadcast user is online
-      io.emit("userOnline", userId);
+      // mark user online in DB
+      await Admin.findByIdAndUpdate(userId, { online: true });
+
+      // broadcast live list
+      broadcastUsers();
     });
 
     // ✅ TYPING START
@@ -38,13 +76,18 @@ export const initSocket = (server) => {
       }
     });
 
-    // ✅ MESSAGE SEND (unchanged)
+    // ✅ MESSAGE SEND
     socket.on("sendMessage", async (payload, ack) => {
       try {
         const { senderId, receiverId, message } = payload;
 
-        const doc = await Message.create({ senderId, receiverId, message });
+        const doc = await Message.create({
+          senderId,
+          receiverId,
+          message,
+        });
 
+        // send message to sender
         io.to(socket.id).emit("receiveMessage", {
           _id: doc._id,
           senderId,
@@ -53,6 +96,7 @@ export const initSocket = (server) => {
           createdAt: doc.createdAt,
         });
 
+        // send message to receiver
         const recvSocket = onlineUsers.get(String(receiverId));
         if (recvSocket) {
           io.to(recvSocket).emit("receiveMessage", {
@@ -64,8 +108,10 @@ export const initSocket = (server) => {
           });
         }
 
-        if (ack) ack({ ok: true });
+        // ✅ unseen count changed, update LIVE user list
+        broadcastUsers();
 
+        if (ack) ack({ ok: true });
       } catch (err) {
         console.log("Socket Error:", err);
         if (ack) ack({ ok: false });
@@ -73,22 +119,21 @@ export const initSocket = (server) => {
     });
 
     // ✅ DISCONNECT
-    socket.on("disconnect", () => {
+    socket.on("disconnect", async () => {
       let offlineUser = null;
 
-      for (const [id, sid] of onlineUsers) {
+      for (const [uid, sid] of onlineUsers) {
         if (sid === socket.id) {
-          offlineUser = id;
-          onlineUsers.delete(id);
+          offlineUser = uid;
+          onlineUsers.delete(uid);
         }
       }
 
-      // ✅ Broadcast offline status
       if (offlineUser) {
-        io.emit("userOffline", offlineUser);
+        await Admin.findByIdAndUpdate(offlineUser, { online: false });
+        broadcastUsers();
       }
     });
-
   });
 
   return io;
