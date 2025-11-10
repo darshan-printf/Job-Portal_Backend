@@ -1,4 +1,3 @@
-// backend/socket.js
 import { Server } from "socket.io";
 import Message from "./models/Message.js";
 import Admin from "./models/Admin.js";
@@ -14,7 +13,6 @@ export const initSocket = (server) => {
     },
   });
 
-  // ✅ Broadcast Users (Admin Dashboard)
   const broadcastUsers = async () => {
     const users = await Admin.find({ role: "user" }).lean();
     const admin = await Admin.findOne({ role: "admin" }).lean();
@@ -48,27 +46,19 @@ export const initSocket = (server) => {
     io.emit("usersList", finalUsers);
   };
 
-  // ✅ Main Socket Connection
   io.on("connection", (socket) => {
 
-    // ✅ JOIN
     socket.on("join", async ({ userId }) => {
       const id = String(userId);
 
-      // Track socket
       if (!onlineUsers.has(id)) onlineUsers.set(id, new Set());
       onlineUsers.get(id).add(socket.id);
 
-      // Mark in DB
       await Admin.findByIdAndUpdate(id, { online: true });
-
-      // Join personal room
       socket.join(id);
 
-      // ✅ Notify others that THIS user is online
       socket.broadcast.emit("userOnline", id);
 
-      // ✅ Send to THIS user who else is already online
       for (const uid of onlineUsers.keys()) {
         if (uid !== id) socket.emit("userOnline", uid);
       }
@@ -76,13 +66,13 @@ export const initSocket = (server) => {
       broadcastUsers();
     });
 
-    // ✅ TYPING
-    socket.on("typing", (senderId) => {
-      socket.broadcast.emit("typing", senderId);
+    // ✅ FIXED TYPING: send only to receiver, not everyone
+    socket.on("typing", ({ senderId, receiverId }) => {
+      io.to(String(receiverId)).emit("typing", senderId);
     });
 
-    socket.on("stopTyping", (senderId) => {
-      socket.broadcast.emit("stopTyping", senderId);
+    socket.on("stopTyping", ({ senderId, receiverId }) => {
+      io.to(String(receiverId)).emit("stopTyping", senderId);
     });
 
     // ✅ SEND MESSAGE
@@ -142,7 +132,6 @@ export const initSocket = (server) => {
       if (offlineUser) {
         await Admin.findByIdAndUpdate(offlineUser, { online: false });
 
-        // ✅ Notify all others this user went offline
         socket.broadcast.emit("userOffline", offlineUser);
 
         broadcastUsers();
