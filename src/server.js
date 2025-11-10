@@ -4,21 +4,42 @@ import connectDB from './config/db.js';
 import rootRouter from './routes/index.js';
 import cors from 'cors';
 import path from 'path';
-// Load environment variables
-dotenv.config();
-const app = express();
-app.use(cors());
-// Connect to MongoDB
-connectDB();
-app.use(express.json());
-// ✅ __dirname setup (ES module ke liye)
-const __dirname = path.resolve();
+import { fileURLToPath } from 'url';
 
-// ✅ Static uploads folder serve karna
+import http from 'http';
+import { initSocket } from './socket.js';
+
+dotenv.config();
+
+const app = express();
+
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+}));
+
+app.use(express.json());
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Static uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Connect DB
+connectDB();
+
+// API
 app.use('/api', rootRouter);
 
-const PORT = process.env.PORT ;
-app.listen(PORT, () => {
-    console.log(`⚙️  Server is running on port:${PORT}`);
+// HTTP server banate hain
+const server = http.createServer(app);
+
+// ✅ Socket.io ko init karo
+initSocket(server);
+
+const PORT = process.env.PORT || 3000;
+
+server.listen(PORT, () => {
+  console.log(`✅ Server running on port ${PORT}`);
 });
