@@ -94,7 +94,7 @@ const deleteFileIfExists = (filePath) => {
   }
 };
 
-// 🧩 Delete team by ID
+// Delete team by ID
 export const deleteTeam = asyncHandler(async (req, res) => {
   const { id } = req.params;
 
