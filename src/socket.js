@@ -14,43 +14,79 @@ export const initSocket = (server) => {
   });
 
   // Broadcast updated user list (for Admin dashboard)
-  const broadcastUsers = async () => {
-    try {
-      const users = await Admin.find({ role: "user" }).lean();
-      const admin = await Admin.findOne({ role: "admin" }).lean();
+ const broadcastUsers = async () => {
+  try {
+    const users = await Admin.find({ role: "user" }).lean();
+    const admin = await Admin.findOne({ role: "admin" }).lean();
 
-      const finalUsers = await Promise.all(
-        users.map(async (u) => {
-          const unseenCount = await Message.countDocuments({
-            senderId: u._id,
-            receiverId: admin._id,
-            seen: false,
-          });
+    if (!admin) return;
 
-          let base64Image = "";
-          if (u.profileImage) {
-            try {
-              base64Image = await imageToBase64(u.profileImage);
-            } catch {
-              base64Image = "";
-            }
+    const finalUsers = await Promise.all(
+      users.map(async (u) => {
+        // 🔴 Unseen count from user → admin
+        const unseenToAdmin = await Message.countDocuments({
+          senderId: u._id,
+          receiverId: admin._id,
+          seen: false,
+        });
+
+        let base64Image = "";
+        if (u.profileImage) {
+          try {
+            base64Image = await imageToBase64(u.profileImage);
+          } catch {
+            base64Image = "";
           }
+        }
 
-          return {
-            ...u,
-            profileImage: base64Image,
-            online: onlineUsers.has(String(u._id)),
-            unseen: unseenCount,
-          };
-        })
-      );
+        return {
+          ...u,
+          profileImage: base64Image,
+          online: onlineUsers.has(String(u._id)),
+          unseen: unseenToAdmin,
+        };
+      })
+    );
 
-      io.emit("usersList", finalUsers);
-      io.emit("onlineUsers", Array.from(onlineUsers.keys())); // ✅ added broadcast
-    } catch (err) {
-      console.error("Broadcast users error:", err);
+    // ✅ Send full user list to admin dashboard
+    const adminSockets = onlineUsers.get(String(admin._id));
+    if (adminSockets) {
+      adminSockets.forEach((sid) => {
+        io.to(sid).emit("usersList", finalUsers);
+      });
     }
-  };
+
+    // ✅ Broadcast online users (for both sides)
+    io.emit("onlineUsers", Array.from(onlineUsers.keys()));
+
+    // ✅ Emit unseen count to each user individually (admin → user)
+    for (const u of finalUsers) {
+      const userSockets = onlineUsers.get(String(u._id));
+      if (userSockets) {
+        const unseenToUser = await Message.countDocuments({
+          senderId: admin._id,
+          receiverId: u._id,
+          seen: false,
+        });
+        userSockets.forEach((sid) => {
+          io.to(sid).emit("unseenCount", unseenToUser);
+        });
+      }
+    }
+
+    // ✅ Emit total unseen (users → admin)
+    const totalUnseen = finalUsers.reduce((sum, u) => sum + u.unseen, 0);
+    if (adminSockets) {
+      adminSockets.forEach((sid) => {
+        io.to(sid).emit("unseenCount", totalUnseen);
+      });
+    }
+
+  } catch (err) {
+    console.error("Broadcast users error:", err);
+  }
+};
+
 
   io.on("connection", (socket) => {
     // ✅ JOIN EVENT
