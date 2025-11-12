@@ -13,44 +13,49 @@ export const initSocket = (server) => {
     },
   });
 
+  // Broadcast updated user list (for Admin dashboard)
   const broadcastUsers = async () => {
-    const users = await Admin.find({ role: "user" }).lean();
-    const admin = await Admin.findOne({ role: "admin" }).lean();
+    try {
+      const users = await Admin.find({ role: "user" }).lean();
+      const admin = await Admin.findOne({ role: "admin" }).lean();
 
-    const finalUsers = await Promise.all(
-      users.map(async (u) => {
-        const unseenCount = await Message.countDocuments({
-          senderId: u._id,
-          receiverId: admin._id,
-          seen: false,
-        });
+      const finalUsers = await Promise.all(
+        users.map(async (u) => {
+          const unseenCount = await Message.countDocuments({
+            senderId: u._id,
+            receiverId: admin._id,
+            seen: false,
+          });
 
-        let base64Image = "";
-        if (u.profileImage) {
-          try {
-            base64Image = await imageToBase64(u.profileImage);
-          } catch {
-            base64Image = "";
+          let base64Image = "";
+          if (u.profileImage) {
+            try {
+              base64Image = await imageToBase64(u.profileImage);
+            } catch {
+              base64Image = "";
+            }
           }
-        }
 
-        return {
-          ...u,
-          profileImage: base64Image,
-          online: onlineUsers.has(String(u._id)),
-          unseen: unseenCount,
-        };
-      })
-    );
+          return {
+            ...u,
+            profileImage: base64Image,
+            online: onlineUsers.has(String(u._id)),
+            unseen: unseenCount,
+          };
+        })
+      );
 
-    io.emit("usersList", finalUsers);
+      io.emit("usersList", finalUsers);
+      io.emit("onlineUsers", Array.from(onlineUsers.keys())); // ✅ added broadcast
+    } catch (err) {
+      console.error("Broadcast users error:", err);
+    }
   };
 
   io.on("connection", (socket) => {
-
+    // ✅ JOIN EVENT
     socket.on("join", async ({ userId }) => {
       const id = String(userId);
-
       if (!onlineUsers.has(id)) onlineUsers.set(id, new Set());
       onlineUsers.get(id).add(socket.id);
 
@@ -58,15 +63,20 @@ export const initSocket = (server) => {
       socket.join(id);
 
       socket.broadcast.emit("userOnline", id);
+      io.emit("onlineUsers", Array.from(onlineUsers.keys())); // ✅ notify all
 
-      for (const uid of onlineUsers.keys()) {
-        if (uid !== id) socket.emit("userOnline", uid);
-      }
+      // send current online list to the connected socket
+      socket.emit("onlineUsers", Array.from(onlineUsers.keys()));
 
-      broadcastUsers();
+      await broadcastUsers();
     });
 
-    // ✅ FIXED TYPING: send only to receiver, not everyone
+    // ✅ Manual request for online users
+    socket.on("getOnlineUsers", () => {
+      socket.emit("onlineUsers", Array.from(onlineUsers.keys()));
+    });
+
+    // ✅ FIXED TYPING (emit only to receiver)
     socket.on("typing", ({ senderId, receiverId }) => {
       io.to(String(receiverId)).emit("typing", senderId);
     });
@@ -97,9 +107,8 @@ export const initSocket = (server) => {
         io.to(String(senderId)).emit("receiveMessage", msgObj);
         io.to(String(receiverId)).emit("receiveMessage", msgObj);
 
-        broadcastUsers();
+        await broadcastUsers();
         if (ack) ack({ ok: true });
-
       } catch (err) {
         console.log("Socket error:", err);
         if (ack) ack({ ok: false });
@@ -108,14 +117,18 @@ export const initSocket = (server) => {
 
     // ✅ MARK SEEN
     socket.on("markSeen", async ({ userId, fromId }) => {
-      await Message.updateMany(
-        { senderId: fromId, receiverId: userId, seen: false },
-        { seen: true, readAt: new Date() }
-      );
-      broadcastUsers();
+      try {
+        await Message.updateMany(
+          { senderId: fromId, receiverId: userId, seen: false },
+          { seen: true, readAt: new Date() }
+        );
+        await broadcastUsers();
+      } catch (err) {
+        console.error("MarkSeen error:", err);
+      }
     });
 
-    // ✅ DISCONNECT
+    // ✅ DISCONNECT HANDLER
     socket.on("disconnect", async () => {
       let offlineUser = null;
 
@@ -131,13 +144,13 @@ export const initSocket = (server) => {
 
       if (offlineUser) {
         await Admin.findByIdAndUpdate(offlineUser, { online: false });
-
         socket.broadcast.emit("userOffline", offlineUser);
-
-        broadcastUsers();
+        io.emit("onlineUsers", Array.from(onlineUsers.keys())); // ✅ update all
+        await broadcastUsers();
       }
     });
   });
 
+  console.log("✅ Socket.IO server initialized");
   return io;
 };
